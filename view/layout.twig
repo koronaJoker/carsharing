@@ -3,41 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>{% block title %}{{ title|default('CarSharing') }}{% endblock %}</title>
-
-    <!-- Стили -->
-    <link rel="stylesheet" href="{{ base }}/styles/style.css">
-
-    {% block styles %}{% endblock %}
+    <title>{% block title %}CarShare{% endblock %}</title>
+    <link rel="stylesheet" href="{{ base }}/styles/style.css?v=app-2">
 </head>
-<body>
+<body class="app-page">
+<header class="app-header">
+    <div class="app-shell app-header-inner">
+        <a class="brand" href="{{ base }}/?page=cars" aria-label="CarShare">
+            <span class="brand-mark icon-car"></span>
+            <span>CarShare</span>
+        </a>
 
-<header>
-    <h1>🚗 CarSharing</h1>
-
-    <nav>
-        <a href="{{ base }}/?page=home">Главная</a>
-        <a href="{{ base }}/?page=my_car">Моя машина</a>
-        <a href="{{ base }}/?page=profile">Профиль</a>
-        <a href="{{ base }}/?page=admin/cars">Админка</a>
-    </nav>
+        {% if user %}
+            <nav class="app-nav" aria-label="Главная навигация">
+                <a class="{{ currentPage == 'cars' ? 'active' : '' }}" href="{{ base }}/?page=cars">
+                    <span class="nav-icon icon-car"></span><span>Выбрать авто</span>
+                </a>
+                <a class="{{ currentPage == 'my_car' or currentPage == 'rent' or currentPage == 'payment' ? 'active' : '' }}" href="{{ base }}/?page=my_car">
+                    <span class="nav-icon icon-key"></span><span>Аренда</span>
+                </a>
+                <a class="{{ currentPage == 'profile' ? 'active' : '' }}" href="{{ base }}/?page=profile">
+                    <span class="nav-icon icon-user"></span><span>Профиль</span>
+                </a>
+            </nav>
+        {% endif %}
+    </div>
 </header>
 
-<hr>
-
-<main>
-    {% block content %}
-    {% endblock %}
+<main class="app-shell app-main">
+    {% block content %}{% endblock %}
 </main>
 
-<hr>
+{% if error is defined and error %}
+    <div class="modal-backdrop" role="dialog" aria-modal="true">
+        <div class="modal">
+            <div class="modal-icon icon-alert"></div>
+            <h2>Проверьте данные</h2>
+            <p>{{ error }}</p>
+            <button type="button" class="btn" data-close-modal>Понятно</button>
+        </div>
+    </div>
+{% endif %}
 
-<footer>
-    <p>© {{ "now"|date("Y") }} CarSharing</p>
-</footer>
-
+<script src="{{ base }}/scripts/index.js?v=app-1"></script>
 {% block scripts %}{% endblock %}
-
 </body>
 </html>

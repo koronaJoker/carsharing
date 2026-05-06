@@ -10,6 +10,15 @@ CREATE TABLE clients (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE admins (
+    id SERIAL PRIMARY KEY,
+    login VARCHAR(80) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role VARCHAR(30) NOT NULL DEFAULT 'admin'
+        CHECK (role IN ('admin')),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE cars (
     id SERIAL PRIMARY KEY,
     brand VARCHAR(50) NOT NULL,
@@ -70,6 +79,9 @@ INSERT INTO clients
 VALUES
 ('Ion Popescu', 'ion@gmail.com', '+37368111222', '2000123456789', 'MD123456', 4.8, 'hash123'),
 ('Maria Rusu', 'maria@gmail.com', '+37369123456', '2000987654321', 'MD654321', 5.0, 'hash456');
+
+INSERT INTO admins (login, password_hash, role)
+VALUES ('superadmin_2026', '$2y$10$QL1bz0RxgDyrpDzb3FBxvO11pts1zv16GHEyUP5hL1BNcMA5zO.E6', 'admin');
 
 INSERT INTO cars
 (brand, model, year, plate_number, fuel_type, transmission, price_per_minute, status)

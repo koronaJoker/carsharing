@@ -1,30 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Логин</title>
-</head>
-<body>
-    <h1>Войти в аккаунт</h1>
+{% extends "layout.twig" %}
 
-    <form action="">
+{% block title %}Вход{% endblock %}
 
-        <input type="email" placeholder="email adress"><br>
-        <input type="password" placeholder=""Password><br>
-        
+{% block content %}
+<section class="auth-view">
+    <div class="auth-panel">
+        <div class="auth-copy">
+            <span class="eyebrow">Каршеринг</span>
+            <h1>Войдите, чтобы выбрать автомобиль</h1>
+            <p>После входа вы сразу попадете на страницу выбора авто.</p>
+        </div>
 
-        <input type="submit" value = "Войти"><br>
+        <form class="auth-form" method="post" action="{{ base }}/?page=login">
+            <label for="login">Email или логин администратора</label>
+            <input id="login" name="login" type="text" value="{{ old.login|default('') }}" autocomplete="username" required>
 
-        <hr>
+            <label for="password">Пароль</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
 
-        <pre><a href="lost_password.php">Забыли пароль?</a></pre>
-    
-        <pre>У вас нет аккаунта?</pre>
-        <a href="registration.php">Зарегистрироваться</a>
+            <button class="btn btn-wide" type="submit">
+                <span class="button-icon icon-login"></span>Войти
+            </button>
 
-
-
-    </form>
-</body>
-</html>
+            <p class="form-note">Нет аккаунта? <a href="{{ base }}/?page=registration">Зарегистрироваться</a></p>
+        </form>
+    </div>
+</section>
+{% endblock %}

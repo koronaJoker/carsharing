@@ -2,6 +2,11 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+$sessionPath = __DIR__ . '/../tmp/sessions';
+if (!is_dir($sessionPath)) {
+    mkdir($sessionPath, 0777, true);
+}
+session_save_path($sessionPath);
 session_start();
 
 use App\Controller\AuthController;
@@ -32,6 +37,7 @@ $publicRoutes = [
     'login' => fn() => $auth->login(),
     'registration' => fn() => $auth->registration(),
     'register' => fn() => $auth->registration(),
+    'home' => fn() => $auth->cars(),
     'logout' => fn() => $auth->logout(),
     'cars' => fn() => $auth->cars(),
     'rent' => fn() => $auth->rent(),

@@ -20,7 +20,10 @@ class View
                 'debug' => true
             ]);
 
-            self::$twig->addGlobal('base', rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\'));
+            $base = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/\\');
+            $base = in_array($base, ['.', '/'], true) ? '' : $base;
+
+            self::$twig->addGlobal('base', $base);
             self::$twig->addGlobal('currentPage', $_GET['page'] ?? 'cars');
             self::$twig->addGlobal('user', $_SESSION['user'] ?? null);
         }

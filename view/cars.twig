@@ -1,25 +1,45 @@
-
 {% extends "layout.twig" %}
 
+{% block title %}Выбор авто{% endblock %}
+
 {% block content %}
+<section class="page-head">
+    <div>
+        <span class="eyebrow">Доступные рядом</span>
+        <h1>Выберите автомобиль</h1>
+    </div>
+    {% if activeRental %}
+        <a class="btn btn-secondary" href="{{ base }}/?page=my_car">Текущая аренда</a>
+    {% endif %}
+</section>
 
-<h1>Выберите автомобиль</h1>
-
-<form>
-
+<section class="car-list">
     {% for car in cars %}
-        <label>
-            {{ car.brand }} {{ car.model }} {{ car.year }}
-            — {{ car.price_per_minute }} лей/мин
-            ({{ car.status }})
-        </label>
-
-        <input type="radio" name="car_id" value="{{ car.id }}">
-        <br>
+        <article class="car">
+            <div class="car-media">
+                <span class="car-glyph icon-car"></span>
+            </div>
+            <div class="car-body">
+                <div class="car-topline">
+                    <h2>{{ car.brand }} {{ car.model }}</h2>
+                    <span class="status-pill">{{ car.status == 'available' ? 'Свободна' : car.status }}</span>
+                </div>
+                <p class="car-info">{{ car.year }} • {{ car.fuel_type }} • {{ car.transmission }}</p>
+                <div class="car-meta">
+                    <span>{{ car.plate_number }}</span>
+                    <strong>{{ car.price_per_minute }} лей/мин</strong>
+                </div>
+                <a class="btn btn-wide" href="{{ base }}/?page=rent&car_id={{ car.id }}">
+                    <span class="button-icon icon-key"></span>Арендовать
+                </a>
+            </div>
+        </article>
+    {% else %}
+        <div class="empty-state">
+            <span class="empty-icon icon-alert"></span>
+            <h2>Нет свободных автомобилей</h2>
+            <p>Попробуйте зайти позже.</p>
+        </div>
     {% endfor %}
-
-    <input type="submit" value="Выбрать авто">
-
-</form>
-
+</section>
 {% endblock %}

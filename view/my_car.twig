@@ -1,45 +1,42 @@
 {% extends "layout.twig" %}
 
+{% block title %}Аренда{% endblock %}
+
 {% block content %}
+<section class="page-head">
+    <div>
+        <span class="eyebrow">Текущая аренда</span>
+        <h1>Мой автомобиль</h1>
+    </div>
+</section>
 
-<span>Бесплатный осмотр</span> 
-<span>{{ rental.total_cost ?? '0.00' }}</span>
+{% if car %}
+    <section class="checkout-layout">
+        <article class="summary-card">
+            <span class="summary-icon icon-car"></span>
+            <h2>{{ car.brand }} {{ car.model }}</h2>
+            <p>{{ car.year }} • {{ car.fuel_type }} • {{ car.transmission }}</p>
+            <div class="number_plate">{{ car.plate_number }}</div>
+            <strong>{{ rental.total_cost }} лей</strong>
+            {% if payment %}
+                <span class="status-pill paid">Оплачено</span>
+            {% endif %}
+        </article>
 
-<hr>
-
-<h1>Мой автомобиль</h1>
-
-<h3>
-    {{ car.brand }} {{ car.model }}
-</h3>
-
-<div class="number_plate">
-    {{ car.plate_number }}
-</div>
-
-<br>
-
-<!-- Управление машиной -->
-<form method="POST" action="{{ base }}/?page=car/action">
-    <input type="hidden" name="car_id" value="{{ car.id }}">
-
-    <button name="action" value="blink">Помигать</button>
-    <button name="action" value="warm">Прогреть</button><br><br>
-
-    <button name="action" value="lock">Закрыть двери</button>
-    <button name="action" value="finish">Завершить</button>
-</form>
-
-<hr>
-
-<h2>Что-то случилось?</h2>
-<p>Сообщи нам</p>
-
-<div class="support-links">
-    <a href="tel:+37360000000">📞 Звонок</a><br>
-    <a href="https://t.me/your_support" target="_blank">💬 Telegram</a><br>
-    <a href="https://wa.me/37360000000" target="_blank">🟢 WhatsApp</a><br>
-    <a href="{{ base }}/?page=support/messages">✉️ Сообщения</a>
-</div>
-
+        <form class="checkout-form car-control-form" method="post" action="{{ base }}/?page=car/action">
+            <input type="hidden" name="car_id" value="{{ car.car_id }}">
+            <button class="control-btn" name="action" value="blink" type="submit"><span class="icon-alert"></span>Помигать</button>
+            <button class="control-btn" name="action" value="warm" type="submit"><span class="icon-key"></span>Прогреть</button>
+            <button class="control-btn" name="action" value="lock" type="submit"><span class="icon-lock"></span>Закрыть</button>
+            <button class="control-btn danger" name="action" value="finish" type="submit"><span class="icon-card"></span>Завершить</button>
+        </form>
+    </section>
+{% else %}
+    <div class="empty-state">
+        <span class="empty-icon icon-car"></span>
+        <h2>Активной аренды нет</h2>
+        <p>Выберите автомобиль, чтобы начать поездку.</p>
+        <a class="btn" href="{{ base }}/?page=cars">Выбрать авто</a>
+    </div>
+{% endif %}
 {% endblock %}
