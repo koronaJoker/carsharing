@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Core\View;
-use App\Repository\AdminRepository;
 use App\Repository\CarRepository;
 use App\Repository\ClientRepository;
 use App\Repository\PaymentRepository;
@@ -17,7 +16,6 @@ class AuthController
 {
     public function __construct(
         private ClientRepository $clients,
-        private AdminRepository $admins,
         private CarRepository $cars,
         private RentalRepository $rentals,
         private PaymentRepository $payments
@@ -231,26 +229,14 @@ class AuthController
 
     private function authenticate(string $login, string $password): void
     {
-        $client = filter_var($login, FILTER_VALIDATE_EMAIL) ? $this->clients->findByEmail($login) : null;
+        $client = $this->clients->findByLogin($login);
 
         if ($client && password_verify($password, $client['password_hash'])) {
             $_SESSION['user'] = [
                 'id' => (int)$client['id'],
                 'name' => $client['full_name'],
                 'email' => $client['email'],
-                'role' => 'client',
-            ];
-            return;
-        }
-
-        $admin = $this->admins->findByLogin($login);
-
-        if ($admin && password_verify($password, $admin['password_hash'])) {
-            $_SESSION['user'] = [
-                'id' => (int)$admin['id'],
-                'name' => $admin['login'],
-                'email' => $admin['login'],
-                'role' => $admin['role'],
+                'role' => $client['role'] ?? 'client',
             ];
             return;
         }

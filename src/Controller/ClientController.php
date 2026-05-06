@@ -72,7 +72,7 @@ class ClientController
         }
 
         try {
-            $this->repo->updateById($id, $this->clientDataFromRequest($client['password_hash']));
+            $this->repo->updateById($id, $this->clientDataFromRequest($client['password_hash'], $client['role'] ?? 'client'));
             $this->redirectToClients();
         } catch (Throwable $e) {
             View::render('admin/edit/client.twig', [
@@ -92,7 +92,7 @@ class ClientController
         $this->redirectToClients();
     }
 
-    private function clientDataFromRequest(?string $currentPasswordHash = null): array
+    private function clientDataFromRequest(?string $currentPasswordHash = null, string $currentRole = 'client'): array
     {
         $password = trim($_POST['password'] ?? '');
 
@@ -104,6 +104,7 @@ class ClientController
             'driver_license' => trim($_POST['driver_license'] ?? ''),
             'driver_rating' => (float)($_POST['driver_rating'] ?? 5),
             'password_hash' => $password !== '' ? password_hash($password, PASSWORD_DEFAULT) : $currentPasswordHash,
+            'role' => $_POST['role'] ?? $currentRole,
         ];
     }
 

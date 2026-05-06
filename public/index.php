@@ -15,7 +15,6 @@ use App\Controller\ClientController;
 use App\Controller\FineController;
 use App\Controller\PaymentController;
 use App\Controller\RentalController;
-use App\Repository\AdminRepository;
 use App\Repository\PaymentRepository;
 use App\Repository\CarRepository;
 use App\Repository\ClientRepository;
@@ -26,7 +25,6 @@ $page = trim($_GET['page'] ?? 'login', '/');
 
 $auth = new AuthController(
     new ClientRepository(),
-    new AdminRepository(),
     new CarRepository(),
     new RentalRepository(),
     new PaymentRepository()

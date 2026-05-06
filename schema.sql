@@ -6,16 +6,9 @@ CREATE TABLE clients (
     idnp VARCHAR(13) UNIQUE NOT NULL CHECK (idnp ~ '^[0-9]{13}$'),
     driver_license VARCHAR(30) UNIQUE NOT NULL,
     driver_rating NUMERIC(2,1) DEFAULT 5.0 CHECK (driver_rating >= 0 AND driver_rating <= 5),
+    role VARCHAR(30) NOT NULL DEFAULT 'client'
+        CHECK (role IN ('client', 'admin')),
     password_hash TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE admins (
-    id SERIAL PRIMARY KEY,
-    login VARCHAR(80) UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    role VARCHAR(30) NOT NULL DEFAULT 'admin'
-        CHECK (role IN ('admin')),
     created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -75,13 +68,11 @@ CREATE TABLE fines (
 );
 
 INSERT INTO clients 
-(full_name, email, phone, idnp, driver_license, driver_rating, password_hash)
+(full_name, email, phone, idnp, driver_license, driver_rating, role, password_hash)
 VALUES
-('Ion Popescu', 'ion@gmail.com', '+37368111222', '2000123456789', 'MD123456', 4.8, 'hash123'),
-('Maria Rusu', 'maria@gmail.com', '+37369123456', '2000987654321', 'MD654321', 5.0, 'hash456');
-
-INSERT INTO admins (login, password_hash, role)
-VALUES ('superadmin_2026', '$2y$10$QL1bz0RxgDyrpDzb3FBxvO11pts1zv16GHEyUP5hL1BNcMA5zO.E6', 'admin');
+('Ion Popescu', 'ion@gmail.com', '+37368111222', '2000123456789', 'MD123456', 4.8, 'client', 'hash123'),
+('Maria Rusu', 'maria@gmail.com', '+37369123456', '2000987654321', 'MD654321', 5.0, 'client', 'hash456'),
+('admin', 'admin', '+37360000123', '9999999999999', 'ADMIN12345', 5.0, 'admin', '$2y$10$rO1K4wDk6luxge4urIbZTe.853oumSDl.z9FZDIRx7FxwXj1DT0P6');
 
 INSERT INTO cars
 (brand, model, year, plate_number, fuel_type, transmission, price_per_minute, status)

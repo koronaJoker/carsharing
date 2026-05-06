@@ -50,6 +50,7 @@ class AuthValidator
             'driver_license' => $license,
             'driver_rating' => 5.0,
             'password_hash' => password_hash($password, PASSWORD_DEFAULT),
+            'role' => 'client',
         ];
     }
 
