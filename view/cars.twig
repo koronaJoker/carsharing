@@ -13,11 +13,65 @@
     {% endif %}
 </section>
 
+<form class="filters-panel" method="get" action="{{ base }}/">
+    <input type="hidden" name="page" value="cars">
+
+    <label>
+        <span>Бренд</span>
+        <select name="brand">
+            <option value="">Все бренды</option>
+            {% for brand in filterOptions.brands %}
+                <option value="{{ brand }}" {{ filters.brand == brand ? 'selected' : '' }}>{{ brand }}</option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <label>
+        <span>Топливо</span>
+        <select name="fuel_type">
+            <option value="">Любое</option>
+            {% for fuelType in filterOptions.fuelTypes %}
+                <option value="{{ fuelType }}" {{ filters.fuel_type == fuelType ? 'selected' : '' }}>{{ fuelType }}</option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <label>
+        <span>Коробка</span>
+        <select name="transmission">
+            <option value="">Любая</option>
+            {% for transmission in filterOptions.transmissions %}
+                <option value="{{ transmission }}" {{ filters.transmission == transmission ? 'selected' : '' }}>{{ transmission }}</option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <label>
+        <span>Год</span>
+        <select name="year">
+            <option value="">Любой</option>
+            {% for year in filterOptions.years %}
+                <option value="{{ year }}" {{ filters.year == year ? 'selected' : '' }}>{{ year }}</option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <label class="price-filter">
+        <span>Цена до <strong data-price-output>{{ priceLimit|number_format(2, '.', '') }}</strong> лей/мин</span>
+        <input type="range" name="max_price" min="0" max="{{ filterOptions.maxPrice|default(0) }}" step="0.10" value="{{ priceLimit|number_format(2, '.', '') }}" data-price-range>
+    </label>
+
+    <div class="filters-actions">
+        <button class="btn" type="submit">Показать</button>
+        <a class="btn btn-secondary" href="{{ base }}/?page=cars">Сбросить</a>
+    </div>
+</form>
+
 <section class="car-list">
     {% for car in cars %}
         <article class="car">
             <div class="car-media">
-                <span class="car-glyph icon-car"></span>
+                <img src="{{ base }}/images/{{ car.image }}" alt="{{ car.brand }} {{ car.model }}" loading="lazy">
             </div>
             <div class="car-body">
                 <div class="car-topline">
@@ -37,8 +91,8 @@
     {% else %}
         <div class="empty-state">
             <span class="empty-icon icon-alert"></span>
-            <h2>Нет свободных автомобилей</h2>
-            <p>Попробуйте зайти позже.</p>
+            <h2>Нет машин по выбранным фильтрам</h2>
+            <p>Измените фильтры или сбросьте параметры.</p>
         </div>
     {% endfor %}
 </section>

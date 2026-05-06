@@ -90,9 +90,14 @@ class AuthController
     public function cars(): void
     {
         $this->requireAuth();
+        $filters = $this->carFiltersFromRequest();
+        $filterOptions = $this->cars->getFilterOptions();
 
         View::render('cars.twig', [
-            'cars' => $this->cars->getAvailable(),
+            'cars' => $this->withCarImages($this->cars->getAvailableFiltered($filters)),
+            'filters' => $filters,
+            'filterOptions' => $filterOptions,
+            'priceLimit' => $filters['max_price'] !== '' ? $filters['max_price'] : $filterOptions['maxPrice'],
             'activeRental' => $this->rentals->findActiveByClientId($this->clientId()),
         ]);
     }
@@ -270,5 +275,44 @@ class AuthController
     {
         header('Location: ' . $location);
         exit;
+    }
+
+    private function carFiltersFromRequest(): array
+    {
+        return [
+            'brand' => trim($_GET['brand'] ?? ''),
+            'fuel_type' => trim($_GET['fuel_type'] ?? ''),
+            'transmission' => trim($_GET['transmission'] ?? ''),
+            'year' => trim($_GET['year'] ?? ''),
+            'max_price' => trim($_GET['max_price'] ?? ''),
+        ];
+    }
+
+    private function withCarImages(array $cars): array
+    {
+        foreach ($cars as &$car) {
+            $car['image'] = $this->carImage((string)$car['brand'], (string)$car['model']);
+        }
+
+        return $cars;
+    }
+
+    private function carImage(string $brand, string $model): string
+    {
+        $key = mb_strtolower($brand . ' ' . $model);
+        $images = [
+            'dacia logan' => 'dacia-logan.jpg',
+            'dacia sandero' => 'dacia-sandero.jpg',
+            'renault clio' => 'renault-clio.jpg',
+            'volkswagen polo' => 'volkswagen-polo.jpg',
+            'skoda octavia' => 'skoda-octavia.jpg',
+            'toyota corolla' => 'toyota-corolla.jpg',
+            'hyundai i30' => 'hyundai-i30.jpg',
+            'kia ceed' => 'kia-ceed.jpg',
+            'nissan leaf' => 'nissan-leaf.jpg',
+            'bmw 1 series' => 'bmw-1-series.jpg',
+        ];
+
+        return $images[$key] ?? 'car-placeholder.jpg';
     }
 }

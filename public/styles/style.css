@@ -255,9 +255,57 @@ body {
     font-size: 36px;
 }
 
+.filters-panel {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 14px;
+    max-width: none;
+    margin-bottom: 22px;
+    padding: 18px;
+}
+
+.filters-panel label {
+    margin: 0;
+}
+
+.filters-panel label > span {
+    display: block;
+    min-height: 20px;
+    margin-bottom: 7px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #475569;
+}
+
+.filters-panel select,
+.filters-panel input {
+    margin: 0;
+}
+
+.price-filter {
+    grid-column: span 2;
+}
+
+.price-filter input[type="range"] {
+    height: 40px;
+    padding: 0;
+    accent-color: #2563eb;
+}
+
+.filters-actions {
+    display: flex;
+    align-items: end;
+    gap: 10px;
+}
+
+.filters-actions .btn {
+    min-height: 42px;
+}
+
 .car-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-auto-rows: 1fr;
     align-items: stretch;
     gap: 18px;
 }
@@ -265,7 +313,8 @@ body {
 .car {
     display: flex;
     flex-direction: column;
-    min-height: 438px;
+    height: 100%;
+    min-height: 460px;
     overflow: hidden;
     padding: 0;
 }
@@ -273,9 +322,19 @@ body {
 .car-media {
     display: grid;
     place-items: center;
-    min-height: 142px;
-    height: 142px;
+    flex: 0 0 180px;
+    width: 100%;
+    min-height: 180px;
+    height: 180px;
     background: linear-gradient(135deg, #111827, #314158);
+}
+
+.car-media img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center;
 }
 
 .car-glyph {
@@ -288,6 +347,7 @@ body {
     display: flex;
     flex: 1;
     flex-direction: column;
+    min-height: 280px;
     padding: 18px;
 }
 
@@ -350,6 +410,7 @@ body {
     gap: 12px;
     min-height: 42px;
     margin-top: auto;
+    padding-top: 14px;
 }
 
 .car-meta span,
@@ -1103,7 +1164,8 @@ tr:hover {
 /* ===== CAR LIST ===== */
 .car-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-auto-rows: 1fr;
     align-items: stretch;
     gap: 20px;
 }
@@ -1170,6 +1232,29 @@ tr:hover {
     .checkout-layout,
     .profile-grid {
         grid-template-columns: 1fr;
+    }
+
+    .filters-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .price-filter {
+        grid-column: auto;
+    }
+
+    .filters-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .car {
+        min-height: 440px;
+    }
+
+    .car-media {
+        flex-basis: 170px;
+        min-height: 170px;
+        height: 170px;
     }
 
     .auth-copy {

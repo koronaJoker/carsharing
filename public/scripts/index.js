@@ -13,4 +13,11 @@ document.addEventListener('input', (event) => {
             .replace(/(.{4})/g, '$1 ')
             .trim();
     }
+
+    if (event.target.matches('[data-price-range]')) {
+        const output = document.querySelector('[data-price-output]');
+        if (output) {
+            output.textContent = Number(event.target.value).toFixed(2);
+        }
+    }
 });
