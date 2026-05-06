@@ -1,0 +1,45 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+
+<span>Бесплатный осмотр</span> 
+<span>{{ rental.total_cost ?? '0.00' }}</span>
+
+<hr>
+
+<h1>Мой автомобиль</h1>
+
+<h3>
+    {{ car.brand }} {{ car.model }}
+</h3>
+
+<div class="number_plate">
+    {{ car.plate_number }}
+</div>
+
+<br>
+
+<!-- Управление машиной -->
+<form method="POST" action="{{ base }}/?page=car/action">
+    <input type="hidden" name="car_id" value="{{ car.id }}">
+
+    <button name="action" value="blink">Помигать</button>
+    <button name="action" value="warm">Прогреть</button><br><br>
+
+    <button name="action" value="lock">Закрыть двери</button>
+    <button name="action" value="finish">Завершить</button>
+</form>
+
+<hr>
+
+<h2>Что-то случилось?</h2>
+<p>Сообщи нам</p>
+
+<div class="support-links">
+    <a href="tel:+37360000000">📞 Звонок</a><br>
+    <a href="https://t.me/your_support" target="_blank">💬 Telegram</a><br>
+    <a href="https://wa.me/37360000000" target="_blank">🟢 WhatsApp</a><br>
+    <a href="{{ base }}/?page=support/messages">✉️ Сообщения</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,41 @@
+<form method="post" action="{{ form_action }}">
+    <label>Клиент ID:</label>
+    <input type="number" name="client_id" value="{{ rental.client_id|default('') }}" required>
+
+    <br><br>
+
+    <label>Машина ID:</label>
+    <input type="number" name="car_id" value="{{ rental.car_id|default('') }}" required>
+
+    <br><br>
+
+    <label>Время начала:</label>
+    <input type="datetime-local" name="start_time" value="{{ rental.start_time|default('')|replace({' ': 'T'})|slice(0, 16) }}" required>
+
+    <br><br>
+
+    <label>Время окончания:</label>
+    <input type="datetime-local" name="end_time" value="{{ rental.end_time|default('')|replace({' ': 'T'})|slice(0, 16) }}">
+
+    <br><br>
+
+    <label>Стоимость:</label>
+    <input type="number" step="0.01" name="total_cost" value="{{ rental.total_cost|default(0) }}" required>
+
+    <br><br>
+
+    <label>Статус:</label>
+    <select name="status" required>
+        <option value="active" {% if rental.status|default('active') == 'active' %}selected{% endif %}>Активна</option>
+        <option value="finished" {% if rental.status|default('') == 'finished' %}selected{% endif %}>Завершена</option>
+        <option value="cancelled" {% if rental.status|default('') == 'cancelled' %}selected{% endif %}>Отменена</option>
+    </select>
+
+    <br><br>
+
+    <button type="submit">{{ submit_label|default('Сохранить') }}</button>
+
+    {% if show_cancel|default(false) %}
+        <a href="?page=admin/rentals">Назад</a>
+    {% endif %}
+</form>

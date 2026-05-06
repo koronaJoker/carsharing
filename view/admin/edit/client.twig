@@ -1,0 +1,17 @@
+{% extends "admin/admin.twig" %}
+
+{% block content %}
+<h2>Редактировать клиента</h2>
+
+{% if error is defined %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+{% include "admin/form/client.twig" with {
+    client: client,
+    form_action: "?page=admin/clients/update&id=" ~ client.id,
+    submit_label: "Сохранить",
+    password_required: false,
+    show_cancel: true
+} %}
+{% endblock %}

@@ -1,0 +1,25 @@
+
+{% extends "layout.twig" %}
+
+{% block content %}
+
+<h1>Выберите автомобиль</h1>
+
+<form>
+
+    {% for car in cars %}
+        <label>
+            {{ car.brand }} {{ car.model }} {{ car.year }}
+            — {{ car.price_per_minute }} лей/мин
+            ({{ car.status }})
+        </label>
+
+        <input type="radio" name="car_id" value="{{ car.id }}">
+        <br>
+    {% endfor %}
+
+    <input type="submit" value="Выбрать авто">
+
+</form>
+
+{% endblock %}

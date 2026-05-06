@@ -1,0 +1,42 @@
+{% extends "admin/admin.twig" %}
+
+{% block content %}
+<h2>Админ > Аренды</h2>
+
+<div class="admin-actions">
+    <a class="btn" href="?page=admin/rentals/create">Добавить аренду</a>
+</div>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>ID</th>
+        <th>Клиент</th>
+        <th>Машина</th>
+        <th>Начало</th>
+        <th>Конец</th>
+        <th>Стоимость</th>
+        <th>Статус</th>
+        <th>Действия</th>
+    </tr>
+
+    {% for rental in rentals %}
+        <tr>
+            <td>{{ rental.id }}</td>
+            <td>{{ rental.client_id }}</td>
+            <td>{{ rental.car_id }}</td>
+            <td>{{ rental.start_time }}</td>
+            <td>{{ rental.end_time }}</td>
+            <td>{{ rental.total_cost }}</td>
+            <td>{{ rental.status }}</td>
+            <td>
+                <a class="action-icon edit-icon" href="?page=admin/rentals/edit&id={{ rental.id }}" title="Редактировать" aria-label="Редактировать">&#9998;</a>
+                <a class="action-icon delete-icon" href="?page=admin/rentals/delete&id={{ rental.id }}" title="Удалить" aria-label="Удалить" onclick="return confirm('Удалить аренду?')">&times;</a>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="8">Нет аренд</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}

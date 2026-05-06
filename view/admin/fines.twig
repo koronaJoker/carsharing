@@ -1,0 +1,58 @@
+{% extends "admin/admin.twig" %}
+
+{% block content %}
+<h2>Админ > Штрафы</h2>
+
+<div class="admin-actions">
+    <a class="btn" href="?page=admin/fines/create">Добавить штраф</a>
+</div>
+
+<table class="admin-table admin-fines-table" border="1" cellpadding="5">
+    <colgroup>
+        <col class="fine-col-id">
+        <col class="fine-col-client">
+        <col class="fine-col-rental">
+        <col class="fine-col-title">
+        <col class="fine-col-description">
+        <col class="fine-col-amount">
+        <col class="fine-col-rating">
+        <col class="fine-col-status">
+        <col class="fine-col-date">
+        <col class="fine-col-actions">
+    </colgroup>
+    <tr>
+        <th>ID</th>
+        <th>Клиент</th>
+        <th>Аренда</th>
+        <th>Название</th>
+        <th>Описание</th>
+        <th>Сумма</th>
+        <th>Штраф к рейтингу</th>
+        <th>Статус</th>
+        <th>Дата</th>
+        <th>Действия</th>
+    </tr>
+
+    {% for fine in fines %}
+        <tr>
+            <td>{{ fine.id }}</td>
+            <td>{{ fine.client_id }}</td>
+            <td>{{ fine.rental_id }}</td>
+            <td class="fine-title-cell">{{ fine.title }}</td>
+            <td class="fine-description-cell">{{ fine.description }}</td>
+            <td>{{ fine.amount }}</td>
+            <td>{{ fine.rating_penalty }}</td>
+            <td>{{ fine.status }}</td>
+            <td>{{ fine.created_at }}</td>
+            <td class="actions-cell">
+                <a class="action-icon edit-icon" href="?page=admin/fines/edit&id={{ fine.id }}" title="Редактировать" aria-label="Редактировать">&#9998;</a>
+                <a class="action-icon delete-icon" href="?page=admin/fines/delete&id={{ fine.id }}" title="Удалить" aria-label="Удалить" onclick="return confirm('Удалить штраф?')">&times;</a>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="10">Нет штрафов</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}

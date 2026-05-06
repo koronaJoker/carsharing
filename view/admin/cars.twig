@@ -1,0 +1,46 @@
+{% extends "admin/admin.twig" %}
+
+{% block content %}
+<h2>Админ > Машины</h2>
+
+<div class="admin-actions">
+    <a class="btn" href="?page=admin/cars/create">Добавить машину</a>
+</div>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>ID</th>
+        <th>Бренд</th>
+        <th>Модель</th>
+        <th>Год</th>
+        <th>Номер</th>
+        <th>Топливо</th>
+        <th>Коробка</th>
+        <th>Цена/мин</th>
+        <th>Статус</th>
+        <th>Действия</th>
+    </tr>
+
+    {% for car in cars %}
+        <tr>
+            <td>{{ car.id }}</td>
+            <td>{{ car.brand }}</td>
+            <td>{{ car.model }}</td>
+            <td>{{ car.year }}</td>
+            <td>{{ car.plate_number }}</td>
+            <td>{{ car.fuel_type }}</td>
+            <td>{{ car.transmission }}</td>
+            <td>{{ car.price_per_minute }}</td>
+            <td>{{ car.status }}</td>
+            <td>
+                <a class="action-icon edit-icon" href="?page=admin/cars/edit&id={{ car.id }}" title="Редактировать" aria-label="Редактировать">&#9998;</a>
+                <a class="action-icon delete-icon" href="?page=admin/cars/delete&id={{ car.id }}" title="Удалить" aria-label="Удалить" onclick="return confirm('Удалить машину?')">&times;</a>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="10">Нет машин</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}

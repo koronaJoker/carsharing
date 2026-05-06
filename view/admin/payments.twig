@@ -1,0 +1,40 @@
+{% extends "admin/admin.twig" %}
+
+{% block content %}
+<h2>Админ > Платежи</h2>
+
+<div class="admin-actions">
+    <a class="btn" href="?page=admin/payments/create">Добавить платеж</a>
+</div>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>ID</th>
+        <th>Аренда</th>
+        <th>Сумма</th>
+        <th>Метод оплаты</th>
+        <th>Статус</th>
+        <th>Дата оплаты</th>
+        <th>Действия</th>
+    </tr>
+
+    {% for payment in payments %}
+        <tr>
+            <td>{{ payment.id }}</td>
+            <td>{{ payment.rental_id }}</td>
+            <td>{{ payment.amount }}</td>
+            <td>{{ payment.payment_method }}</td>
+            <td>{{ payment.payment_status }}</td>
+            <td>{{ payment.paid_at }}</td>
+            <td>
+                <a class="action-icon edit-icon" href="?page=admin/payments/edit&id={{ payment.id }}" title="Редактировать" aria-label="Редактировать">&#9998;</a>
+                <a class="action-icon delete-icon" href="?page=admin/payments/delete&id={{ payment.id }}" title="Удалить" aria-label="Удалить" onclick="return confirm('Удалить платеж?')">&times;</a>
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="7">Нет платежей</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}

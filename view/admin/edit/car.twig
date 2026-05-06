@@ -1,0 +1,16 @@
+{% extends "admin/admin.twig" %}
+
+{% block content %}
+<h2>Редактировать машину</h2>
+
+{% if error is defined %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+{% include "admin/form/car.twig" with {
+    car: car,
+    form_action: "?page=admin/cars/update&id=" ~ car.id,
+    submit_label: "Сохранить",
+    show_cancel: true
+} %}
+{% endblock %}

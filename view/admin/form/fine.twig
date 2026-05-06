@@ -1,0 +1,46 @@
+<form method="post" action="{{ form_action }}">
+    <label>Клиент ID:</label>
+    <input type="number" name="client_id" value="{{ fine.client_id|default('') }}" required>
+
+    <br><br>
+
+    <label>Аренда ID:</label>
+    <input type="number" name="rental_id" value="{{ fine.rental_id|default('') }}">
+
+    <br><br>
+
+    <label>Название:</label>
+    <input type="text" name="title" value="{{ fine.title|default('') }}" required>
+
+    <br><br>
+
+    <label>Описание:</label>
+    <textarea name="description">{{ fine.description|default('') }}</textarea>
+
+    <br><br>
+
+    <label>Сумма:</label>
+    <input type="number" step="0.01" name="amount" value="{{ fine.amount|default('') }}" required>
+
+    <br><br>
+
+    <label>Штраф к рейтингу:</label>
+    <input type="number" step="0.1" min="0" max="5" name="rating_penalty" value="{{ fine.rating_penalty|default(0.1) }}" required>
+
+    <br><br>
+
+    <label>Статус:</label>
+    <select name="status" required>
+        <option value="unpaid" {% if fine.status|default('unpaid') == 'unpaid' %}selected{% endif %}>Не оплачен</option>
+        <option value="paid" {% if fine.status|default('') == 'paid' %}selected{% endif %}>Оплачен</option>
+        <option value="cancelled" {% if fine.status|default('') == 'cancelled' %}selected{% endif %}>Отменен</option>
+    </select>
+
+    <br><br>
+
+    <button type="submit">{{ submit_label|default('Сохранить') }}</button>
+
+    {% if show_cancel|default(false) %}
+        <a href="?page=admin/fines">Назад</a>
+    {% endif %}
+</form>

@@ -1,0 +1,109 @@
+<?php
+
+class Payment
+{
+    private int $rental_id;
+    private float $amount;
+    private string $payment_method;
+    private string $payment_status;
+    private ?DateTime $paid_at;
+
+    public function __construct(
+        int $rental_id,
+        float $amount,
+        string $payment_method,
+        string $payment_status = 'pending',
+        ?string $paid_at = null
+    ) {
+        $this->setRentalId($rental_id);
+        $this->setAmount($amount);
+        $this->setPaymentMethod($payment_method);
+        $this->setPaymentStatus($payment_status);
+        $this->setPaidAt($paid_at);
+    }
+
+    // --- RENTAL ---
+    public function getRentalId(): int
+    {
+        return $this->rental_id;
+    }
+
+    public function setRentalId(int $rental_id): void
+    {
+        if ($rental_id <= 0) {
+            throw new Exception("Invalid rental ID.");
+        }
+        $this->rental_id = $rental_id;
+    }
+
+    // --- AMOUNT ---
+    public function getAmount(): float
+    {
+        return $this->amount;
+    }
+
+    public function setAmount(float $amount): void
+    {
+        if ($amount <= 0) {
+            throw new Exception("Amount must be greater than 0.");
+        }
+        $this->amount = $amount;
+    }
+
+    // --- METHOD ---
+    public function getPaymentMethod(): string
+    {
+        return $this->payment_method;
+    }
+
+    public function setPaymentMethod(string $method): void
+    {
+        $allowed = ['card', 'cash', 'apple_pay', 'google_pay'];
+
+        if (!in_array($method, $allowed)) {
+            throw new Exception("Invalid payment method.");
+        }
+
+        $this->payment_method = $method;
+    }
+
+    // --- STATUS ---
+    public function getPaymentStatus(): string
+    {
+        return $this->payment_status;
+    }
+
+    public function setPaymentStatus(string $status): void
+    {
+        $allowed = ['pending', 'paid', 'failed'];
+
+        if (!in_array($status, $allowed)) {
+            throw new Exception("Invalid payment status.");
+        }
+
+        $this->payment_status = $status;
+    }
+
+    // --- DATE ---
+    public function getPaidAt(): ?DateTime
+    {
+        return $this->paid_at;
+    }
+
+    public function setPaidAt(?string $paid_at): void
+    {
+        $this->paid_at = $paid_at ? new DateTime($paid_at) : null;
+    }
+
+    // --- BUSINESS LOGIC ---
+    public function markAsPaid(): void
+    {
+        $this->payment_status = 'paid';
+        $this->paid_at = new DateTime();
+    }
+
+    public function fail(): void
+    {
+        $this->payment_status = 'failed';
+    }
+}

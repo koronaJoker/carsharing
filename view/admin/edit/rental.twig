@@ -1,0 +1,16 @@
+{% extends "admin/admin.twig" %}
+
+{% block content %}
+<h2>Редактировать аренду</h2>
+
+{% if error is defined %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+{% include "admin/form/rental.twig" with {
+    rental: rental,
+    form_action: "?page=admin/rentals/update&id=" ~ rental.id,
+    submit_label: "Сохранить",
+    show_cancel: true
+} %}
+{% endblock %}

@@ -1,0 +1,42 @@
+<form method="post" action="{{ form_action }}">
+    <label>ФИО:</label>
+    <input type="text" name="full_name" value="{{ client.full_name|default('') }}" required>
+
+    <br><br>
+
+    <label>Email:</label>
+    <input type="email" name="email" value="{{ client.email|default('') }}" required>
+
+    <br><br>
+
+    <label>Телефон:</label>
+    <input type="text" name="phone" value="{{ client.phone|default('') }}" required>
+
+    <br><br>
+
+    <label>IDNP:</label>
+    <input type="text" name="idnp" value="{{ client.idnp|default('') }}" required>
+
+    <br><br>
+
+    <label>Водительское удостоверение:</label>
+    <input type="text" name="driver_license" value="{{ client.driver_license|default('') }}" required>
+
+    <br><br>
+
+    <label>Рейтинг:</label>
+    <input type="number" step="0.1" min="0" max="5" name="driver_rating" value="{{ client.driver_rating|default(5) }}" required>
+
+    <br><br>
+
+    <label>Пароль:</label>
+    <input type="password" name="password" {% if password_required|default(false) %}required{% endif %}>
+
+    <br><br>
+
+    <button type="submit">{{ submit_label|default('Сохранить') }}</button>
+
+    {% if show_cancel|default(false) %}
+        <a href="?page=admin/clients">Назад</a>
+    {% endif %}
+</form>
