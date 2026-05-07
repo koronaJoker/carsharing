@@ -7,15 +7,27 @@ use App\Model\Car;
 use App\Repository\CarRepository;
 use Throwable;
 
+/**
+ * Handles administrative CRUD actions for cars.
+ */
 class CarController
 {
+    /**
+     * Car persistence layer.
+     */
     private CarRepository $repo;
 
+    /**
+     * Creates the controller with a car repository.
+     */
     public function __construct(CarRepository $repo)
     {
         $this->repo = $repo;
     }
 
+    /**
+     * Shows the list of cars in the admin panel.
+     */
     public function index(): void
     {
         $cars = $this->repo->getAll();
@@ -25,6 +37,9 @@ class CarController
         ]);
     }
 
+    /**
+     * Shows the car creation form or stores a submitted car.
+     */
     public function create(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -46,6 +61,9 @@ class CarController
         }
     }
 
+    /**
+     * Shows the edit form for a car.
+     */
     public function edit(int $id): void
     {
         $car = $this->repo->findById($id);
@@ -61,6 +79,9 @@ class CarController
         ]);
     }
 
+    /**
+     * Updates an existing car from the submitted form.
+     */
     public function update(int $id): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -82,6 +103,9 @@ class CarController
         }
     }
 
+    /**
+     * Deletes a car by identifier and redirects to the list.
+     */
     public function delete(int $id): void
     {
         $this->repo->deleteById($id);
@@ -89,6 +113,9 @@ class CarController
         $this->redirectToCars();
     }
 
+    /**
+     * Builds a validated car model from the current request.
+     */
     private function createCarFromRequest(): Car
     {
         return new Car(
@@ -103,6 +130,9 @@ class CarController
         );
     }
 
+    /**
+     * Redirects back to the cars administration page.
+     */
     private function redirectToCars(): void
     {
         header('Location: ?page=admin/cars');

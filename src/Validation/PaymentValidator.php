@@ -4,8 +4,17 @@ namespace App\Validation;
 
 use InvalidArgumentException;
 
+/**
+ * Validates payment form input.
+ */
 class PaymentValidator
 {
+    /**
+     * Validates card payment data and returns normalized values.
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, string>
+     */
     public static function card(array $data): array
     {
         $method = $data['payment_method'] ?? 'card';

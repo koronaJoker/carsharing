@@ -5,11 +5,20 @@ namespace App\Core;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
+/**
+ * Configures and renders Twig templates for the application.
+ */
 class View
 {
 
+    /**
+     * Cached Twig environment instance.
+     */
     private static ?Environment $twig = null;
 
+    /**
+     * Returns the shared Twig environment.
+     */
     public static function get(): Environment
     {
         if (self::$twig === null) {
@@ -31,6 +40,11 @@ class View
         return self::$twig;
     }
 
+    /**
+     * Renders a Twig template with the provided data.
+     *
+     * @param array<string, mixed> $data
+     */
     public static function render(string $template, array $data = []): void
     {
 

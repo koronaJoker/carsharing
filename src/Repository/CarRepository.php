@@ -3,14 +3,27 @@ namespace App\Repository;
 
 use PDO;
 
+/**
+ * Provides database operations for cars.
+ */
 class CarRepository extends BaseRepository
 {
+    /**
+     * Returns all cars.
+     *
+     * @return array<int, array<string, mixed>>
+     */
     public function getAll(): array
     {
         return $this->pdo->query('SELECT * FROM cars')
             ->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Finds a car by identifier.
+     *
+     * @return array<string, mixed>|null
+     */
     public function findById(int $id): ?array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM cars WHERE id = :id');
@@ -21,6 +34,11 @@ class CarRepository extends BaseRepository
         return $car ?: null;
     }
 
+    /**
+     * Returns all available cars ordered for display.
+     *
+     * @return array<int, array<string, mixed>>
+     */
     public function getAvailable(): array
     {
         return $this->pdo
@@ -28,6 +46,12 @@ class CarRepository extends BaseRepository
             ->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Returns available cars filtered by the provided criteria.
+     *
+     * @param array<string, mixed> $filters
+     * @return array<int, array<string, mixed>>
+     */
     public function getAvailableFiltered(array $filters): array
     {
         $where = ["status = 'available'"];
@@ -58,13 +82,26 @@ class CarRepository extends BaseRepository
             $params['max_price'] = (float)$filters['max_price'];
         }
 
-        $sql = 'SELECT * FROM cars WHERE ' . implode(' AND ', $where) . ' ORDER BY brand, model';
+        $sortOptions = [
+            'price_asc' => 'price_per_minute ASC, brand ASC, model ASC',
+            'price_desc' => 'price_per_minute DESC, brand ASC, model ASC',
+            'year_desc' => 'year DESC, brand ASC, model ASC',
+            'year_asc' => 'year ASC, brand ASC, model ASC',
+        ];
+        $orderBy = $sortOptions[$filters['sort'] ?? ''] ?? 'brand ASC, model ASC';
+
+        $sql = 'SELECT * FROM cars WHERE ' . implode(' AND ', $where) . ' ORDER BY ' . $orderBy;
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Returns distinct filter options for available cars.
+     *
+     * @return array<string, mixed>
+     */
     public function getFilterOptions(): array
     {
         return [
@@ -78,6 +115,11 @@ class CarRepository extends BaseRepository
         ];
     }
 
+    /**
+     * Returns distinct non-null values for an allowed car column.
+     *
+     * @return array<int, mixed>
+     */
     private function distinctAvailable(string $column, string $direction = 'ASC'): array
     {
         $allowedColumns = ['brand', 'fuel_type', 'transmission', 'year'];
@@ -92,6 +134,9 @@ class CarRepository extends BaseRepository
             ->fetchAll(PDO::FETCH_COLUMN);
     }
 
+    /**
+     * Updates the status of a car.
+     */
     public function updateStatus(int $id, string $status): bool
     {
         return $this->pdo
@@ -99,6 +144,11 @@ class CarRepository extends BaseRepository
             ->execute(['id' => $id, 'status' => $status]);
     }
 
+    /**
+     * Inserts a new car and returns its identifier.
+     *
+     * @param array<string, mixed> $data
+     */
     public function insert(array $data): int
     {
         $sql = "
@@ -118,6 +168,11 @@ class CarRepository extends BaseRepository
         return (int)$this->pdo->lastInsertId();
     }
 
+    /**
+     * Updates a car by identifier.
+     *
+     * @param array<string, mixed> $data
+     */
     public function updateById(int $id, array $data): bool
     {
         $sql = "
@@ -139,6 +194,9 @@ class CarRepository extends BaseRepository
         ]);
     }
 
+    /**
+     * Deletes a car by identifier.
+     */
     public function deleteById(int $id): bool
     {
         return $this->pdo

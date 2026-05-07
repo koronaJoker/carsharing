@@ -12,7 +12,7 @@
         </div>
 
         <form class="auth-form" method="post" action="{{ base }}/?page=login">
-            <label for="login">Email или логин администратора</label>
+            <label for="login">Email или логин пользователя</label>
             <input id="login" name="login" type="text" value="{{ old.login|default('') }}" autocomplete="username" required>
 
             <label for="password">Пароль</label>

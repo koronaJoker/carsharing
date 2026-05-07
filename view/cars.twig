@@ -56,6 +56,17 @@
         </select>
     </label>
 
+    <label>
+        <span>Сортировка</span>
+        <select name="sort">
+            <option value="">По умолчанию</option>
+            <option value="price_asc" {{ filters.sort == 'price_asc' ? 'selected' : '' }}>Цена: по возрастанию</option>
+            <option value="price_desc" {{ filters.sort == 'price_desc' ? 'selected' : '' }}>Цена: по убыванию</option>
+            <option value="year_desc" {{ filters.sort == 'year_desc' ? 'selected' : '' }}>Новее сначала</option>
+            <option value="year_asc" {{ filters.sort == 'year_asc' ? 'selected' : '' }}>Старее сначала</option>
+        </select>
+    </label>
+
     <label class="price-filter">
         <span>Цена до <strong data-price-output>{{ priceLimit|number_format(2, '.', '') }}</strong> лей/мин</span>
         <input type="range" name="max_price" min="0" max="{{ filterOptions.maxPrice|default(0) }}" step="0.10" value="{{ priceLimit|number_format(2, '.', '') }}" data-price-range>

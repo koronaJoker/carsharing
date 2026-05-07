@@ -4,10 +4,19 @@ namespace App\Core;
 use PDO;
 use Dotenv\Dotenv;
 
+/**
+ * Provides a shared PDO connection configured from environment variables.
+ */
 class Database
 {
+    /**
+     * Cached PDO connection instance.
+     */
     private static ?PDO $connection = null;
 
+    /**
+     * Returns the application database connection.
+     */
     public static function getConnection(): PDO 
     {
         if (self::$connection === null) {
@@ -29,6 +38,8 @@ class Database
                 PDO::ATTR_ERRMODE,
                 PDO::ERRMODE_EXCEPTION
             );
+
+            self::$connection->exec("SET TIME ZONE 'Europe/Bucharest'");
         }
 
         return self::$connection;

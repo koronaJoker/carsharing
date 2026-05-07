@@ -67,6 +67,16 @@ CREATE TABLE fines (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE client_adresses (
+    id SERIAL PRIMARY KEY,
+    client_id INT NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+    title VARCHAR(80) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    latitude NUMERIC(10,7) NOT NULL CHECK (latitude >= -90 AND latitude <= 90),
+    longitude NUMERIC(10,7) NOT NULL CHECK (longitude >= -180 AND longitude <= 180),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 INSERT INTO clients 
 (full_name, email, phone, idnp, driver_license, driver_rating, role, password_hash)
 VALUES

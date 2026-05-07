@@ -3,14 +3,27 @@ namespace App\Repository;
 
 use PDO;
 
+/**
+ * Provides database operations for payments.
+ */
 class PaymentRepository extends BaseRepository
 {
+    /**
+     * Returns all payments.
+     *
+     * @return array<int, array<string, mixed>>
+     */
     public function getAll(): array
     {
         return $this->pdo->query('SELECT * FROM payments')
             ->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Finds a payment by identifier.
+     *
+     * @return array<string, mixed>|null
+     */
     public function findById(int $id): ?array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM payments WHERE id = :id');
@@ -21,6 +34,11 @@ class PaymentRepository extends BaseRepository
         return $payment ?: null;
     }
 
+    /**
+     * Finds the latest payment for a rental.
+     *
+     * @return array<string, mixed>|null
+     */
     public function findByRentalId(int $rentalId): ?array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM payments WHERE rental_id = :rental_id ORDER BY id DESC LIMIT 1');
@@ -31,6 +49,11 @@ class PaymentRepository extends BaseRepository
         return $payment ?: null;
     }
 
+    /**
+     * Updates a payment by identifier.
+     *
+     * @param array<string, mixed> $data
+     */
     public function updateById(int $id, array $data): bool
     {
         $sql = "
@@ -49,6 +72,11 @@ class PaymentRepository extends BaseRepository
         ]);
     }
 
+    /**
+     * Inserts a new payment and returns its identifier.
+     *
+     * @param array<string, mixed> $data
+     */
     public function insert(array $data): int
     {
         $sql = "
@@ -68,6 +96,9 @@ class PaymentRepository extends BaseRepository
         return (int)$this->pdo->lastInsertId();
     }
 
+    /**
+     * Deletes a payment by identifier.
+     */
     public function deleteById(int $id): bool
     {
         return $this->pdo

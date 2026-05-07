@@ -3,20 +3,36 @@ namespace App\Repository;
 
 use PDO;
 
+/**
+ * Provides database operations for clients.
+ */
 class ClientRepository extends BaseRepository
 {
+    /**
+     * Initializes the repository and ensures role support exists.
+     */
     public function __construct()
     {
         parent::__construct();
         $this->ensureRoleColumn();
     }
 
+    /**
+     * Returns all clients.
+     *
+     * @return array<int, array<string, mixed>>
+     */
     public function getAll(): array
     {
         return $this->pdo->query('SELECT * FROM clients')
             ->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Finds a client by identifier.
+     *
+     * @return array<string, mixed>|null
+     */
     public function findById(int $id): ?array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM clients WHERE id = :id');
@@ -27,6 +43,11 @@ class ClientRepository extends BaseRepository
         return $client ?: null;
     }
 
+    /**
+     * Finds a client by email address.
+     *
+     * @return array<string, mixed>|null
+     */
     public function findByEmail(string $email): ?array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM clients WHERE LOWER(email) = LOWER(:email)');
@@ -37,6 +58,11 @@ class ClientRepository extends BaseRepository
         return $client ?: null;
     }
 
+    /**
+     * Finds a client by email or full name login.
+     *
+     * @return array<string, mixed>|null
+     */
     public function findByLogin(string $login): ?array
     {
         $login = trim($login);
@@ -49,6 +75,11 @@ class ClientRepository extends BaseRepository
         return $client ?: null;
     }
 
+    /**
+     * Inserts a new client and returns its identifier.
+     *
+     * @param array<string, mixed> $data
+     */
     public function insert(array $data): int
     {
         $sql = "
@@ -77,6 +108,11 @@ class ClientRepository extends BaseRepository
         return (int)$this->pdo->lastInsertId();
     }
 
+    /**
+     * Updates a client by identifier.
+     *
+     * @param array<string, mixed> $data
+     */
     public function updateById(int $id, array $data): bool
     {
         $sql = "
@@ -105,6 +141,9 @@ class ClientRepository extends BaseRepository
         ]);
     }
 
+    /**
+     * Deletes a client by identifier.
+     */
     public function deleteById(int $id): bool
     {
         return $this->pdo
@@ -112,6 +151,9 @@ class ClientRepository extends BaseRepository
             ->execute(['id' => $id]);
     }
 
+    /**
+     * Ensures the clients table has a valid role column.
+     */
     private function ensureRoleColumn(): void
     {
         $this->pdo->exec("

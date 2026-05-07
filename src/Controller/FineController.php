@@ -6,15 +6,27 @@ use App\Core\View;
 use App\Repository\FineRepository;
 use Throwable;
 
+/**
+ * Handles administrative CRUD actions for fines.
+ */
 class FineController
 {
+    /**
+     * Fine persistence layer.
+     */
     private FineRepository $repo;
 
+    /**
+     * Creates the controller with a fine repository.
+     */
     public function __construct(FineRepository $repo)
     {
         $this->repo = $repo;
     }
 
+    /**
+     * Shows the list of fines in the admin panel.
+     */
     public function index(): void
     {
         View::render('admin/fines.twig', [
@@ -22,6 +34,9 @@ class FineController
         ]);
     }
 
+    /**
+     * Shows the fine creation form or stores a submitted fine.
+     */
     public function create(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -42,6 +57,9 @@ class FineController
         }
     }
 
+    /**
+     * Shows the edit form for a fine.
+     */
     public function edit(int $id): void
     {
         $fine = $this->repo->findById($id);
@@ -57,6 +75,9 @@ class FineController
         ]);
     }
 
+    /**
+     * Updates an existing fine from the submitted form.
+     */
     public function update(int $id): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -77,12 +98,20 @@ class FineController
         }
     }
 
+    /**
+     * Deletes a fine by identifier and redirects to the list.
+     */
     public function delete(int $id): void
     {
         $this->repo->deleteById($id);
         $this->redirectToFines();
     }
 
+    /**
+     * Normalizes fine form data for persistence.
+     *
+     * @return array<string, mixed>
+     */
     private function fineDataFromRequest(): array
     {
         return [
@@ -96,6 +125,9 @@ class FineController
         ];
     }
 
+    /**
+     * Redirects back to the fines administration page.
+     */
     private function redirectToFines(): void
     {
         header('Location: ?page=admin/fines');

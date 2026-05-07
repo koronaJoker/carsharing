@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Core\View;
 use App\Repository\CarRepository;
+use App\Repository\ClientAddressRepository;
 use App\Repository\ClientRepository;
 use App\Repository\PaymentRepository;
 use App\Repository\RentalRepository;
@@ -12,16 +13,26 @@ use App\Validation\PaymentValidator;
 use App\Validation\RentalValidator;
 use Throwable;
 
+/**
+ * Handles authentication and client-facing rental workflows.
+ */
 class AuthController
 {
+    /**
+     * Creates the controller with repositories needed for user workflows.
+     */
     public function __construct(
         private ClientRepository $clients,
         private CarRepository $cars,
         private RentalRepository $rentals,
-        private PaymentRepository $payments
+        private PaymentRepository $payments,
+        private ClientAddressRepository $adresses
     ) {
     }
 
+    /**
+     * Shows the login form or authenticates submitted credentials.
+     */
     public function login(): void
     {
         if ($this->isAuthenticated()) {
@@ -45,6 +56,9 @@ class AuthController
         }
     }
 
+    /**
+     * Shows the registration form or creates a new client account.
+     */
     public function registration(): void
     {
         if ($this->isAuthenticated()) {
@@ -80,6 +94,9 @@ class AuthController
         }
     }
 
+    /**
+     * Clears the session and redirects to login.
+     */
     public function logout(): void
     {
         $_SESSION = [];
@@ -87,6 +104,9 @@ class AuthController
         $this->redirect('?page=login');
     }
 
+    /**
+     * Shows available cars with filtering options.
+     */
     public function cars(): void
     {
         $this->requireAuth();
@@ -102,6 +122,9 @@ class AuthController
         ]);
     }
 
+    /**
+     * Shows the rental form or creates a rental for the selected car.
+     */
     public function rent(): void
     {
         $this->requireAuth();
@@ -148,6 +171,9 @@ class AuthController
         }
     }
 
+    /**
+     * Shows the payment form or records payment for a rental.
+     */
     public function payment(): void
     {
         $this->requireAuth();
@@ -186,6 +212,9 @@ class AuthController
         }
     }
 
+    /**
+     * Shows the authenticated client's profile.
+     */
     public function profile(): void
     {
         $this->requireAuth();
@@ -194,6 +223,63 @@ class AuthController
         View::render('profile.twig', ['client' => $client]);
     }
 
+    /**
+     * Shows saved client addresses.
+     */
+    public function adresses(): void
+    {
+        $this->requireAuth();
+
+        View::render('adress.twig', [
+            'adresses' => $this->withMapLinks($this->adresses->findByClientId($this->clientId())),
+            'old' => $_POST,
+        ]);
+    }
+
+    /**
+     * Creates, updates, or deletes a client address from form input.
+     */
+    public function adressAction(): void
+    {
+        $this->requireAuth();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('?page=adresses');
+        }
+
+        try {
+            $action = $_POST['action'] ?? 'create';
+            $id = (int)($_POST['id'] ?? 0);
+
+            if ($action === 'delete' && $id > 0) {
+                $this->adresses->deleteForClient($id, $this->clientId());
+                $this->redirect('?page=adresses');
+            }
+
+            $adressData = $this->adressDataFromRequest();
+
+            if ($action === 'update' && $id > 0) {
+                $this->adresses->updateForClient($id, $this->clientId(), $adressData);
+            } else {
+                $this->adresses->insert([
+                    'client_id' => $this->clientId(),
+                    ...$adressData,
+                ]);
+            }
+
+            $this->redirect('?page=adresses');
+        } catch (Throwable $e) {
+            View::render('adress.twig', [
+                'adresses' => $this->withMapLinks($this->adresses->findByClientId($this->clientId())),
+                'error' => $e->getMessage(),
+                'old' => $_POST,
+            ]);
+        }
+    }
+
+    /**
+     * Shows the client's active rental and related payment.
+     */
     public function myCar(): void
     {
         $this->requireAuth();
@@ -206,6 +292,9 @@ class AuthController
         ]);
     }
 
+    /**
+     * Handles actions for the client's active car rental.
+     */
     public function carAction(): void
     {
         $this->requireAuth();
@@ -221,6 +310,9 @@ class AuthController
         $this->redirect('?page=my_car');
     }
 
+    /**
+     * Ensures the current session belongs to an administrator.
+     */
     public function requireAdmin(): void
     {
         $this->requireAuth();
@@ -232,6 +324,9 @@ class AuthController
         }
     }
 
+    /**
+     * Authenticates credentials and stores the user in the session.
+     */
     private function authenticate(string $login, string $password): void
     {
         $client = $this->clients->findByLogin($login);
@@ -249,6 +344,9 @@ class AuthController
         throw new \InvalidArgumentException('Неверный логин или пароль.');
     }
 
+    /**
+     * Redirects unauthenticated users to the login page.
+     */
     private function requireAuth(): void
     {
         if (!$this->isAuthenticated()) {
@@ -256,27 +354,44 @@ class AuthController
         }
     }
 
+    /**
+     * Checks whether the current session contains a user.
+     */
     private function isAuthenticated(): bool
     {
         return isset($_SESSION['user']);
     }
 
+    /**
+     * Checks whether the current session belongs to an administrator.
+     */
     private function isAdmin(): bool
     {
         return ($_SESSION['user']['role'] ?? '') === 'admin';
     }
 
+    /**
+     * Returns the current client identifier from the session.
+     */
     private function clientId(): int
     {
         return (int)($_SESSION['user']['id'] ?? 0);
     }
 
+    /**
+     * Sends an HTTP redirect and stops execution.
+     */
     private function redirect(string $location): void
     {
         header('Location: ' . $location);
         exit;
     }
 
+    /**
+     * Reads car filter values from the current request.
+     *
+     * @return array<string, string>
+     */
     private function carFiltersFromRequest(): array
     {
         return [
@@ -285,9 +400,16 @@ class AuthController
             'transmission' => trim($_GET['transmission'] ?? ''),
             'year' => trim($_GET['year'] ?? ''),
             'max_price' => trim($_GET['max_price'] ?? ''),
+            'sort' => trim($_GET['sort'] ?? ''),
         ];
     }
 
+    /**
+     * Adds image filenames to car rows.
+     *
+     * @param array<int, array<string, mixed>> $cars
+     * @return array<int, array<string, mixed>>
+     */
     private function withCarImages(array $cars): array
     {
         foreach ($cars as &$car) {
@@ -297,22 +419,84 @@ class AuthController
         return $cars;
     }
 
+    /**
+     * Adds Google Maps URLs to address rows.
+     *
+     * @param array<int, array<string, mixed>> $adresses
+     * @return array<int, array<string, mixed>>
+     */
+    private function withMapLinks(array $adresses): array
+    {
+        foreach ($adresses as &$adress) {
+            $lat = (string)$adress['latitude'];
+            $lng = (string)$adress['longitude'];
+            $adress['maps_url'] = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($lat . ',' . $lng);
+        }
+
+        return $adresses;
+    }
+
+    /**
+     * Validates and normalizes address form input.
+     *
+     * @return array<string, mixed>
+     */
+    private function adressDataFromRequest(): array
+    {
+        $title = trim($_POST['title'] ?? '');
+        $address = trim($_POST['address'] ?? '');
+        $coordinates = trim($_POST['coordinates'] ?? '');
+
+        if (mb_strlen($title) < 2) {
+            throw new \InvalidArgumentException('Название адреса должно содержать минимум 2 символа.');
+        }
+
+        if (mb_strlen($address) < 5) {
+            throw new \InvalidArgumentException('Адрес должен содержать минимум 5 символов.');
+        }
+
+        if (!preg_match('/^\s*(-?\d+(?:[.,]\d+)?)\s*,\s*(-?\d+(?:[.,]\d+)?)\s*$/', $coordinates, $matches)) {
+            throw new \InvalidArgumentException('Координаты должны быть в формате: 47.049769001929626, 28.864979562989657');
+        }
+
+        $latitude = str_replace(',', '.', $matches[1]);
+        $longitude = str_replace(',', '.', $matches[2]);
+
+        if (!is_numeric($latitude) || (float)$latitude < -90 || (float)$latitude > 90) {
+            throw new \InvalidArgumentException('Широта должна быть числом от -90 до 90.');
+        }
+
+        if (!is_numeric($longitude) || (float)$longitude < -180 || (float)$longitude > 180) {
+            throw new \InvalidArgumentException('Долгота должна быть числом от -180 до 180.');
+        }
+
+        return [
+            'title' => $title,
+            'address' => $address,
+            'latitude' => (float)$latitude,
+            'longitude' => (float)$longitude,
+        ];
+    }
+
+    /**
+     * Resolves a car image filename for the given brand and model.
+     */
     private function carImage(string $brand, string $model): string
     {
         $key = mb_strtolower($brand . ' ' . $model);
         $images = [
-            'dacia logan' => 'dacia-logan.jpg',
-            'dacia sandero' => 'dacia-sandero.jpg',
-            'renault clio' => 'renault-clio.jpg',
-            'volkswagen polo' => 'volkswagen-polo.jpg',
-            'skoda octavia' => 'skoda-octavia.jpg',
-            'toyota corolla' => 'toyota-corolla.jpg',
-            'hyundai i30' => 'hyundai-i30.jpg',
-            'kia ceed' => 'kia-ceed.jpg',
-            'nissan leaf' => 'nissan-leaf.jpg',
-            'bmw 1 series' => 'bmw-1-series.jpg',
+            'dacia logan' => 'dacia-logan.webp',
+            'dacia sandero' => 'dacia-sandero.webp',
+            'renault clio' => 'renault-clio.webp',
+            'volkswagen polo' => 'volkswagen-polo.webp',
+            'skoda octavia' => 'skoda-octavia.webp',
+            'toyota corolla' => 'toyota-corolla.webp',
+            'hyundai i30' => 'hyundai-i30.webp',
+            'kia ceed' => 'kia-ceed.webp',
+            'nissan leaf' => 'nissan-leaf.webp',
+            'bmw 1 series' => 'bmw-1-series.webp',
         ];
 
-        return $images[$key] ?? 'car-placeholder.jpg';
+        return $images[$key] ?? 'car-placeholder.webp';
     }
 }

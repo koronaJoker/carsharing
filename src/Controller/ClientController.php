@@ -6,15 +6,27 @@ use App\Core\View;
 use App\Repository\ClientRepository;
 use Throwable;
 
+/**
+ * Handles administrative CRUD actions for clients.
+ */
 class ClientController
 {
+    /**
+     * Client persistence layer.
+     */
     private ClientRepository $repo;
 
+    /**
+     * Creates the controller with a client repository.
+     */
     public function __construct(ClientRepository $repo)
     {
         $this->repo = $repo;
     }
 
+    /**
+     * Shows the list of clients in the admin panel.
+     */
     public function index(): void
     {
         View::render('admin/clients.twig', [
@@ -22,6 +34,9 @@ class ClientController
         ]);
     }
 
+    /**
+     * Shows the client creation form or stores a submitted client.
+     */
     public function create(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -42,6 +57,9 @@ class ClientController
         }
     }
 
+    /**
+     * Shows the edit form for a client.
+     */
     public function edit(int $id): void
     {
         $client = $this->repo->findById($id);
@@ -57,6 +75,9 @@ class ClientController
         ]);
     }
 
+    /**
+     * Updates an existing client from the submitted form.
+     */
     public function update(int $id): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -86,12 +107,20 @@ class ClientController
         }
     }
 
+    /**
+     * Deletes a client by identifier and redirects to the list.
+     */
     public function delete(int $id): void
     {
         $this->repo->deleteById($id);
         $this->redirectToClients();
     }
 
+    /**
+     * Normalizes client form data for persistence.
+     *
+     * @return array<string, mixed>
+     */
     private function clientDataFromRequest(?string $currentPasswordHash = null, string $currentRole = 'client'): array
     {
         $password = trim($_POST['password'] ?? '');
@@ -108,6 +137,9 @@ class ClientController
         ];
     }
 
+    /**
+     * Redirects back to the clients administration page.
+     */
     private function redirectToClients(): void
     {
         header('Location: ?page=admin/clients');

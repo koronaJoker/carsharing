@@ -5,8 +5,17 @@ namespace App\Validation;
 use DateTime;
 use InvalidArgumentException;
 
+/**
+ * Validates rental form input.
+ */
 class RentalValidator
 {
+    /**
+     * Validates rental data and returns normalized values.
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
     public static function rent(array $data): array
     {
         $carId = (int)($data['car_id'] ?? 0);

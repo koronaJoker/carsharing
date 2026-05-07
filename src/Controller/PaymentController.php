@@ -6,15 +6,27 @@ use App\Core\View;
 use App\Repository\PaymentRepository;
 use Throwable;
 
+/**
+ * Handles administrative CRUD actions for payments.
+ */
 class PaymentController
 {
+    /**
+     * Payment persistence layer.
+     */
     private PaymentRepository $repo;
 
+    /**
+     * Creates the controller with a payment repository.
+     */
     public function __construct(PaymentRepository $repo)
     {
         $this->repo = $repo;
     }
 
+    /**
+     * Shows the list of payments in the admin panel.
+     */
     public function index(): void
     {
         View::render('admin/payments.twig', [
@@ -22,6 +34,9 @@ class PaymentController
         ]);
     }
 
+    /**
+     * Shows the payment creation form or stores a submitted payment.
+     */
     public function create(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -42,6 +57,9 @@ class PaymentController
         }
     }
 
+    /**
+     * Shows the edit form for a payment.
+     */
     public function edit(int $id): void
     {
         $payment = $this->repo->findById($id);
@@ -57,6 +75,9 @@ class PaymentController
         ]);
     }
 
+    /**
+     * Updates an existing payment from the submitted form.
+     */
     public function update(int $id): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -77,12 +98,20 @@ class PaymentController
         }
     }
 
+    /**
+     * Deletes a payment by identifier and redirects to the list.
+     */
     public function delete(int $id): void
     {
         $this->repo->deleteById($id);
         $this->redirectToPayments();
     }
 
+    /**
+     * Normalizes payment form data for persistence.
+     *
+     * @return array<string, mixed>
+     */
     private function paymentDataFromRequest(): array
     {
         return [
@@ -94,11 +123,17 @@ class PaymentController
         ];
     }
 
+    /**
+     * Converts a datetime-local value to a database datetime string.
+     */
     private function dateTimeOrNull(?string $value): ?string
     {
         return $value ? str_replace('T', ' ', $value) : null;
     }
 
+    /**
+     * Redirects back to the payments administration page.
+     */
     private function redirectToPayments(): void
     {
         header('Location: ?page=admin/payments');

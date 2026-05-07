@@ -6,15 +6,27 @@ use App\Core\View;
 use App\Repository\RentalRepository;
 use Throwable;
 
+/**
+ * Handles administrative CRUD actions for rentals.
+ */
 class RentalController
 {
+    /**
+     * Rental persistence layer.
+     */
     private RentalRepository $repo;
 
+    /**
+     * Creates the controller with a rental repository.
+     */
     public function __construct(RentalRepository $repo)
     {
         $this->repo = $repo;
     }
 
+    /**
+     * Shows the list of rentals in the admin panel.
+     */
     public function index(): void
     {
         View::render('admin/rentals.twig', [
@@ -22,6 +34,9 @@ class RentalController
         ]);
     }
 
+    /**
+     * Shows the rental creation form or stores a submitted rental.
+     */
     public function create(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -42,6 +57,9 @@ class RentalController
         }
     }
 
+    /**
+     * Shows the edit form for a rental.
+     */
     public function edit(int $id): void
     {
         $rental = $this->repo->findById($id);
@@ -57,6 +75,9 @@ class RentalController
         ]);
     }
 
+    /**
+     * Updates an existing rental from the submitted form.
+     */
     public function update(int $id): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -77,12 +98,20 @@ class RentalController
         }
     }
 
+    /**
+     * Deletes a rental by identifier and redirects to the list.
+     */
     public function delete(int $id): void
     {
         $this->repo->deleteById($id);
         $this->redirectToRentals();
     }
 
+    /**
+     * Normalizes rental form data for persistence.
+     *
+     * @return array<string, mixed>
+     */
     private function rentalDataFromRequest(): array
     {
         return [
@@ -95,11 +124,17 @@ class RentalController
         ];
     }
 
+    /**
+     * Converts a datetime-local value to a database datetime string.
+     */
     private function dateTimeOrNull(?string $value): ?string
     {
         return $value ? str_replace('T', ' ', $value) : null;
     }
 
+    /**
+     * Redirects back to the rentals administration page.
+     */
     private function redirectToRentals(): void
     {
         header('Location: ?page=admin/rentals');

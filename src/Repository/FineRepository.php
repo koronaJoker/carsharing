@@ -4,8 +4,16 @@ namespace App\Repository;
 
 use PDO;
 
+/**
+ * Provides database operations for fines.
+ */
 class FineRepository extends BaseRepository
 {
+    /**
+     * Returns all fines with client names.
+     *
+     * @return array<int, array<string, mixed>>
+     */
     public function getAll(): array
     {
         $sql = "
@@ -22,6 +30,11 @@ class FineRepository extends BaseRepository
             ->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Finds a fine by identifier.
+     *
+     * @return array<string, mixed>|null
+     */
     public function findById(int $id): ?array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM fines WHERE id = :id');
@@ -32,6 +45,11 @@ class FineRepository extends BaseRepository
         return $fine ?: null;
     }
 
+    /**
+     * Inserts a new fine.
+     *
+     * @param array<string, mixed> $data
+     */
     public function insert(array $data): bool
     {
         $sql = "
@@ -52,6 +70,11 @@ class FineRepository extends BaseRepository
         ]);
     }
 
+    /**
+     * Updates a fine by identifier.
+     *
+     * @param array<string, mixed> $data
+     */
     public function updateById(int $id, array $data): bool
     {
         $sql = "
@@ -78,6 +101,9 @@ class FineRepository extends BaseRepository
         ]);
     }
 
+    /**
+     * Deletes a fine by identifier.
+     */
     public function deleteById(int $id): bool
     {
         return $this->pdo

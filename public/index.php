@@ -1,6 +1,14 @@
 <?php
 
+/**
+ * Application front controller.
+ *
+ * Boots Composer, starts the session, and dispatches public and admin routes.
+ */
+
 require_once __DIR__ . '/../vendor/autoload.php';
+
+date_default_timezone_set('Europe/Bucharest');
 
 $sessionPath = __DIR__ . '/../tmp/sessions';
 if (!is_dir($sessionPath)) {
@@ -17,6 +25,7 @@ use App\Controller\PaymentController;
 use App\Controller\RentalController;
 use App\Repository\PaymentRepository;
 use App\Repository\CarRepository;
+use App\Repository\ClientAddressRepository;
 use App\Repository\ClientRepository;
 use App\Repository\RentalRepository;
 use App\Repository\FineRepository;
@@ -27,9 +36,13 @@ $auth = new AuthController(
     new ClientRepository(),
     new CarRepository(),
     new RentalRepository(),
-    new PaymentRepository()
+    new PaymentRepository(),
+    new ClientAddressRepository()
 );
 
+/**
+ * @var array<string, callable(): void> $publicRoutes Public page route handlers.
+ */
 $publicRoutes = [
     '' => fn() => $auth->login(),
     'login' => fn() => $auth->login(),
@@ -41,6 +54,8 @@ $publicRoutes = [
     'rent' => fn() => $auth->rent(),
     'payment' => fn() => $auth->payment(),
     'profile' => fn() => $auth->profile(),
+    'adresses' => fn() => $auth->adresses(),
+    'adress/action' => fn() => $auth->adressAction(),
     'my_car' => fn() => $auth->myCar(),
     'car/action' => fn() => $auth->carAction(),
 ];
@@ -50,6 +65,9 @@ if (isset($publicRoutes[$page])) {
     exit;
 }
 
+/**
+ * @var array<string, object> $adminControllers Admin route prefixes mapped to CRUD controllers.
+ */
 $adminControllers = [
     'admin/cars' => new CarController(new CarRepository()),
     'admin/clients' => new ClientController(new ClientRepository()),

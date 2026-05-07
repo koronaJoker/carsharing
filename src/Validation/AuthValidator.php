@@ -4,8 +4,17 @@ namespace App\Validation;
 
 use InvalidArgumentException;
 
+/**
+ * Validates authentication and registration input.
+ */
 class AuthValidator
 {
+    /**
+     * Validates registration data and returns normalized client data.
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
     public static function registration(array $data): array
     {
         $fullName = trim($data['full_name'] ?? '');
@@ -54,6 +63,12 @@ class AuthValidator
         ];
     }
 
+    /**
+     * Validates login credentials and returns normalized values.
+     *
+     * @param array<string, mixed> $data
+     * @return array{login: string, password: string}
+     */
     public static function login(array $data): array
     {
         $login = trim($data['login'] ?? '');
@@ -70,6 +85,9 @@ class AuthValidator
         return ['login' => $login, 'password' => $password];
     }
 
+    /**
+     * Ensures that a password satisfies the minimum strength policy.
+     */
     private static function strongPassword(string $password): void
     {
         if (strlen($password) < 8) {
