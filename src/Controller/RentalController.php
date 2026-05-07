@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Core\View;
+use App\Repository\AuditLogRepository;
 use App\Repository\RentalRepository;
 use Throwable;
 
@@ -17,11 +18,17 @@ class RentalController
     private RentalRepository $repo;
 
     /**
+     * MongoDB audit log persistence layer.
+     */
+    private AuditLogRepository $auditLogs;
+
+    /**
      * Creates the controller with a rental repository.
      */
-    public function __construct(RentalRepository $repo)
+    public function __construct(RentalRepository $repo, AuditLogRepository $auditLogs)
     {
         $this->repo = $repo;
+        $this->auditLogs = $auditLogs;
     }
 
     /**
@@ -47,7 +54,12 @@ class RentalController
         }
 
         try {
-            $this->repo->insert($this->rentalDataFromRequest());
+            $rentalData = $this->rentalDataFromRequest();
+            $rentalId = $this->repo->insert($rentalData);
+            $this->auditLogs->log('admin_rental_created', $this->adminPayload([
+                'rental_id' => $rentalId,
+                'rental' => $rentalData,
+            ]));
             $this->redirectToRentals();
         } catch (Throwable $e) {
             View::render('admin/create/rental.twig', [
@@ -85,7 +97,12 @@ class RentalController
         }
 
         try {
-            $this->repo->updateById($id, $this->rentalDataFromRequest());
+            $rentalData = $this->rentalDataFromRequest();
+            $this->repo->updateById($id, $rentalData);
+            $this->auditLogs->log('admin_rental_updated', $this->adminPayload([
+                'rental_id' => $id,
+                'rental' => $rentalData,
+            ]));
             $this->redirectToRentals();
         } catch (Throwable $e) {
             View::render('admin/edit/rental.twig', [
@@ -103,7 +120,12 @@ class RentalController
      */
     public function delete(int $id): void
     {
+        $rental = $this->repo->findById($id);
         $this->repo->deleteById($id);
+        $this->auditLogs->log('admin_rental_deleted', $this->adminPayload([
+            'rental_id' => $id,
+            'rental' => $rental,
+        ]));
         $this->redirectToRentals();
     }
 
@@ -139,5 +161,21 @@ class RentalController
     {
         header('Location: ?page=admin/rentals');
         exit;
+    }
+
+    /**
+     * Adds administrator data to an audit payload.
+     *
+     * @param array<string, mixed> $payload
+     * @return array<string, mixed>
+     */
+    private function adminPayload(array $payload): array
+    {
+        return [
+            'admin_id' => (int)($_SESSION['user']['id'] ?? 0),
+            'admin_email' => $_SESSION['user']['email'] ?? null,
+            'admin' => $_SESSION['user'] ?? null,
+            ...$payload,
+        ];
     }
 }

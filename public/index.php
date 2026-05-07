@@ -8,7 +8,9 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-date_default_timezone_set('Europe/Bucharest');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../src', 'data.env');
+$dotenv->safeLoad();
+date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'Europe/Bucharest');
 
 $sessionPath = __DIR__ . '/../tmp/sessions';
 if (!is_dir($sessionPath)) {
@@ -21,9 +23,11 @@ use App\Controller\AuthController;
 use App\Controller\CarController;
 use App\Controller\ClientController;
 use App\Controller\FineController;
+use App\Controller\LocationController;
 use App\Controller\PaymentController;
 use App\Controller\RentalController;
 use App\Repository\PaymentRepository;
+use App\Repository\AuditLogRepository;
 use App\Repository\CarRepository;
 use App\Repository\ClientAddressRepository;
 use App\Repository\ClientRepository;
@@ -31,13 +35,15 @@ use App\Repository\RentalRepository;
 use App\Repository\FineRepository;
 
 $page = trim($_GET['page'] ?? 'login', '/');
+$auditLogs = new AuditLogRepository();
 
 $auth = new AuthController(
     new ClientRepository(),
     new CarRepository(),
     new RentalRepository(),
     new PaymentRepository(),
-    new ClientAddressRepository()
+    new ClientAddressRepository(),
+    $auditLogs
 );
 
 /**
@@ -58,7 +64,31 @@ $publicRoutes = [
     'adress/action' => fn() => $auth->adressAction(),
     'my_car' => fn() => $auth->myCar(),
     'car/action' => fn() => $auth->carAction(),
+    'mongo/test' => function () use ($auditLogs): void {
+        $ok = $auditLogs->testConnection();
+        echo $ok ? 'MongoDB test document inserted' : 'MongoDB test failed: ' . ($_SESSION['mongo_error'] ?? 'unknown error');
+    },
+    'mongo/gps-test' => fn() => (new LocationController())->testSaveForActiveRental(),
 ];
+
+if (str_starts_with($page, 'api/location/')) {
+    $locations = new LocationController();
+
+    match ($page) {
+        'api/location/save' => $locations->saveLocation(),
+        'api/location/latest' => $locations->getLatestLocation(),
+        'api/location/route' => $locations->getRoute(),
+        'api/location/distance' => $locations->getDistance(),
+        default => null,
+    };
+
+    if (!in_array($page, ['api/location/save', 'api/location/latest', 'api/location/route', 'api/location/distance'], true)) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Not found']);
+    }
+
+    exit;
+}
 
 if (isset($publicRoutes[$page])) {
     $publicRoutes[$page]();
@@ -69,11 +99,11 @@ if (isset($publicRoutes[$page])) {
  * @var array<string, object> $adminControllers Admin route prefixes mapped to CRUD controllers.
  */
 $adminControllers = [
-    'admin/cars' => new CarController(new CarRepository()),
-    'admin/clients' => new ClientController(new ClientRepository()),
-    'admin/payments' => new PaymentController(new PaymentRepository()),
-    'admin/rentals' => new RentalController(new RentalRepository()),
-    'admin/fines' => new FineController(new FineRepository()),
+    'admin/cars' => new CarController(new CarRepository(), $auditLogs),
+    'admin/clients' => new ClientController(new ClientRepository(), $auditLogs),
+    'admin/payments' => new PaymentController(new PaymentRepository(), $auditLogs),
+    'admin/rentals' => new RentalController(new RentalRepository(), $auditLogs),
+    'admin/fines' => new FineController(new FineRepository(), $auditLogs),
 ];
 
 foreach ($adminControllers as $prefix => $controller) {

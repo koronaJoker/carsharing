@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Core\View;
 use App\Model\Car;
+use App\Repository\AuditLogRepository;
 use App\Repository\CarRepository;
 use Throwable;
 
@@ -18,11 +19,17 @@ class CarController
     private CarRepository $repo;
 
     /**
+     * MongoDB audit log persistence layer.
+     */
+    private AuditLogRepository $auditLogs;
+
+    /**
      * Creates the controller with a car repository.
      */
-    public function __construct(CarRepository $repo)
+    public function __construct(CarRepository $repo, AuditLogRepository $auditLogs)
     {
         $this->repo = $repo;
+        $this->auditLogs = $auditLogs;
     }
 
     /**
@@ -51,7 +58,11 @@ class CarController
 
         try {
             $car = $this->createCarFromRequest();
-            $this->repo->insert($car->toArray());
+            $carId = $this->repo->insert($car->toArray());
+            $this->auditLogs->log('admin_car_created', $this->adminPayload([
+                'car_id' => $carId,
+                'car' => $car->toArray(),
+            ]));
             $this->redirectToCars();
         } catch (Throwable $e) {
             View::render('admin/create/car.twig', [
@@ -91,6 +102,10 @@ class CarController
         try {
             $car = $this->createCarFromRequest();
             $this->repo->updateById($id, $car->toArray());
+            $this->auditLogs->log('admin_car_updated', $this->adminPayload([
+                'car_id' => $id,
+                'car' => $car->toArray(),
+            ]));
             $this->redirectToCars();
         } catch (Throwable $e) {
             View::render('admin/edit/car.twig', [
@@ -108,7 +123,12 @@ class CarController
      */
     public function delete(int $id): void
     {
+        $car = $this->repo->findById($id);
         $this->repo->deleteById($id);
+        $this->auditLogs->log('admin_car_deleted', $this->adminPayload([
+            'car_id' => $id,
+            'car' => $car,
+        ]));
 
         $this->redirectToCars();
     }
@@ -137,5 +157,21 @@ class CarController
     {
         header('Location: ?page=admin/cars');
         exit;
+    }
+
+    /**
+     * Adds administrator data to an audit payload.
+     *
+     * @param array<string, mixed> $payload
+     * @return array<string, mixed>
+     */
+    private function adminPayload(array $payload): array
+    {
+        return [
+            'admin_id' => (int)($_SESSION['user']['id'] ?? 0),
+            'admin_email' => $_SESSION['user']['email'] ?? null,
+            'admin' => $_SESSION['user'] ?? null,
+            ...$payload,
+        ];
     }
 }

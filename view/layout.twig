@@ -62,6 +62,17 @@
     </div>
 {% endif %}
 
+{% if mongoError %}
+    <div class="modal-backdrop" role="dialog" aria-modal="true">
+        <div class="modal">
+            <div class="modal-icon icon-alert"></div>
+            <h2>MongoDB error</h2>
+            <p>{{ mongoError }}</p>
+            <button type="button" class="btn" data-close-modal>Понятно</button>
+        </div>
+    </div>
+{% endif %}
+
 <script src="{{ base }}/scripts/index.js?v=app-2"></script>
 {% block scripts %}{% endblock %}
 </body>

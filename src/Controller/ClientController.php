@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Core\View;
+use App\Repository\AuditLogRepository;
 use App\Repository\ClientRepository;
 use Throwable;
 
@@ -17,11 +18,17 @@ class ClientController
     private ClientRepository $repo;
 
     /**
+     * MongoDB audit log persistence layer.
+     */
+    private AuditLogRepository $auditLogs;
+
+    /**
      * Creates the controller with a client repository.
      */
-    public function __construct(ClientRepository $repo)
+    public function __construct(ClientRepository $repo, AuditLogRepository $auditLogs)
     {
         $this->repo = $repo;
+        $this->auditLogs = $auditLogs;
     }
 
     /**
@@ -47,7 +54,12 @@ class ClientController
         }
 
         try {
-            $this->repo->insert($this->clientDataFromRequest());
+            $clientData = $this->clientDataFromRequest();
+            $clientId = $this->repo->insert($clientData);
+            $this->auditLogs->log('admin_client_created', $this->adminPayload([
+                'client_id' => $clientId,
+                'client' => $this->clientAuditData($clientData),
+            ]));
             $this->redirectToClients();
         } catch (Throwable $e) {
             View::render('admin/create/client.twig', [
@@ -93,7 +105,12 @@ class ClientController
         }
 
         try {
-            $this->repo->updateById($id, $this->clientDataFromRequest($client['password_hash'], $client['role'] ?? 'client'));
+            $clientData = $this->clientDataFromRequest($client['password_hash'], $client['role'] ?? 'client');
+            $this->repo->updateById($id, $clientData);
+            $this->auditLogs->log('admin_client_updated', $this->adminPayload([
+                'client_id' => $id,
+                'client' => $this->clientAuditData($clientData),
+            ]));
             $this->redirectToClients();
         } catch (Throwable $e) {
             View::render('admin/edit/client.twig', [
@@ -112,7 +129,12 @@ class ClientController
      */
     public function delete(int $id): void
     {
+        $client = $this->repo->findById($id);
         $this->repo->deleteById($id);
+        $this->auditLogs->log('admin_client_deleted', $this->adminPayload([
+            'client_id' => $id,
+            'client' => $this->clientAuditData($client ?? []),
+        ]));
         $this->redirectToClients();
     }
 
@@ -144,5 +166,34 @@ class ClientController
     {
         header('Location: ?page=admin/clients');
         exit;
+    }
+
+    /**
+     * Removes sensitive values from client audit data.
+     *
+     * @param array<string, mixed> $client
+     * @return array<string, mixed>
+     */
+    private function clientAuditData(array $client): array
+    {
+        unset($client['password_hash'], $client['password']);
+
+        return $client;
+    }
+
+    /**
+     * Adds administrator data to an audit payload.
+     *
+     * @param array<string, mixed> $payload
+     * @return array<string, mixed>
+     */
+    private function adminPayload(array $payload): array
+    {
+        return [
+            'admin_id' => (int)($_SESSION['user']['id'] ?? 0),
+            'admin_email' => $_SESSION['user']['email'] ?? null,
+            'admin' => $_SESSION['user'] ?? null,
+            ...$payload,
+        ];
     }
 }

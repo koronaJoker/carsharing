@@ -35,6 +35,7 @@ class View
             self::$twig->addGlobal('base', $base);
             self::$twig->addGlobal('currentPage', $_GET['page'] ?? 'cars');
             self::$twig->addGlobal('user', $_SESSION['user'] ?? null);
+            self::$twig->addGlobal('mongoError', $_SESSION['mongo_error'] ?? null);
         }
 
         return self::$twig;
@@ -51,6 +52,7 @@ class View
         $twig = self::get();
         $twig->addGlobal('currentPage', $_GET['page'] ?? 'cars');
         $twig->addGlobal('user', $_SESSION['user'] ?? null);
+        $twig->addGlobal('mongoError', $_SESSION['mongo_error'] ?? null);
 
         echo $twig->render($template, $data);
     }

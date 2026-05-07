@@ -156,3 +156,42 @@ $row = $stmt->fetch();
 ```php
 $rows = $stmt->fetchAll();
 ```
+
+---
+
+## NoSQL база данных MongoDB
+
+Кроме реляционной базы PostgreSQL в проект добавлена NoSQL база MongoDB. PostgreSQL остается основной базой для структурированных данных: клиентов, машин, аренд, оплат и штрафов. MongoDB используется как документное хранилище для журнала событий приложения.
+
+В MongoDB создается коллекция:
+
+```text
+carsharing_nosql.audit_logs
+```
+
+В нее записываются события:
+
+- `login` - вход пользователя;
+- `registration` - регистрация клиента;
+- `rental_created` - создание аренды;
+- `payment_created` - успешная оплата;
+- `rental_finished` - завершение аренды.
+- `admin_car_created`, `admin_car_updated`, `admin_car_deleted` - действия администратора с машинами;
+- `admin_client_created`, `admin_client_updated`, `admin_client_deleted` - действия администратора с клиентами;
+- `admin_payment_created`, `admin_payment_updated`, `admin_payment_deleted` - действия администратора с оплатами;
+- `admin_rental_created`, `admin_rental_updated`, `admin_rental_deleted` - действия администратора с арендами;
+- `admin_fine_created`, `admin_fine_updated`, `admin_fine_deleted` - действия администратора со штрафами.
+
+Такой подход показывает работу сразу с двумя типами баз данных:
+
+- PostgreSQL хранит нормализованные связанные таблицы;
+- MongoDB хранит гибкие JSON-подобные документы с историей действий.
+
+Настройки MongoDB находятся в `src/data.env`:
+
+```env
+MONGODB_URI=mongodb://localhost:27017
+MONGODB_DATABASE=carsharing_nosql
+```
+
+Для полноценной работы MongoDB нужно установить сам сервер MongoDB и PHP-расширение `mongodb` для XAMPP. Если расширение не установлено, сайт продолжит работать на PostgreSQL, а NoSQL-логирование будет просто пропущено.

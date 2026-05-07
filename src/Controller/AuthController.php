@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Core\View;
 use App\Repository\CarRepository;
+use App\Repository\AuditLogRepository;
 use App\Repository\ClientAddressRepository;
 use App\Repository\ClientRepository;
 use App\Repository\PaymentRepository;
@@ -11,6 +12,8 @@ use App\Repository\RentalRepository;
 use App\Validation\AuthValidator;
 use App\Validation\PaymentValidator;
 use App\Validation\RentalValidator;
+use DateTimeImmutable;
+use DateTimeZone;
 use Throwable;
 
 /**
@@ -26,7 +29,8 @@ class AuthController
         private CarRepository $cars,
         private RentalRepository $rentals,
         private PaymentRepository $payments,
-        private ClientAddressRepository $adresses
+        private ClientAddressRepository $adresses,
+        private AuditLogRepository $auditLogs
     ) {
     }
 
@@ -47,6 +51,11 @@ class AuthController
         try {
             $credentials = AuthValidator::login($_POST);
             $this->authenticate($credentials['login'], $credentials['password']);
+            $this->auditLogs->log('login', [
+                'client_id' => $this->clientId(),
+                'login' => $credentials['login'],
+                'user' => $_SESSION['user'] ?? null,
+            ]);
             $this->redirect($this->isAdmin() ? '?page=admin/cars' : '?page=cars');
         } catch (Throwable $e) {
             View::render('login.twig', [
@@ -84,6 +93,15 @@ class AuthController
                 'email' => $clientData['email'],
                 'role' => 'client',
             ];
+
+            $this->auditLogs->log('registration', [
+                'client_id' => $clientId,
+                'email' => $clientData['email'],
+                'user' => [
+                    'name' => $clientData['full_name'],
+                    'email' => $clientData['email'],
+                ],
+            ]);
 
             $this->redirect('?page=cars');
         } catch (Throwable $e) {
@@ -161,6 +179,14 @@ class AuthController
             ]);
 
             $this->cars->updateStatus((int)$car['id'], 'rented');
+            $this->auditLogs->log('rental_created', [
+                'client_id' => $this->clientId(),
+                'rental_id' => $rentalId,
+                'car_id' => (int)$car['id'],
+                'user' => $_SESSION['user'] ?? null,
+                'car' => $car,
+                'total_cost' => $totalCost,
+            ]);
             $this->redirect('?page=payment&rental_id=' . $rentalId);
         } catch (Throwable $e) {
             View::render('rent.twig', [
@@ -199,7 +225,15 @@ class AuthController
                 'amount' => $rental['total_cost'],
                 'payment_method' => $paymentData['payment_method'],
                 'payment_status' => 'paid',
-                'paid_at' => date('Y-m-d H:i:s'),
+                'paid_at' => $this->currentLocalDateTime(),
+            ]);
+
+            $this->auditLogs->log('payment_created', [
+                'client_id' => $this->clientId(),
+                'rental_id' => $rentalId,
+                'user' => $_SESSION['user'] ?? null,
+                'amount' => (float)$rental['total_cost'],
+                'payment_method' => $paymentData['payment_method'],
             ]);
 
             $this->redirect('?page=my_car');
@@ -304,6 +338,13 @@ class AuthController
             if ($rental) {
                 $this->rentals->finishActiveForClient($this->clientId());
                 $this->cars->updateStatus((int)$rental['car_id'], 'available');
+                $this->auditLogs->log('rental_finished', [
+                    'client_id' => $this->clientId(),
+                    'rental_id' => (int)$rental['id'],
+                    'car_id' => (int)$rental['car_id'],
+                    'user' => $_SESSION['user'] ?? null,
+                    'car' => $rental,
+                ]);
             }
         }
 
@@ -498,5 +539,13 @@ class AuthController
         ];
 
         return $images[$key] ?? 'car-placeholder.webp';
+    }
+
+    /**
+     * Returns the current local datetime formatted for PostgreSQL timestamp fields.
+     */
+    private function currentLocalDateTime(): string
+    {
+        return (new DateTimeImmutable('now', new DateTimeZone($_ENV['APP_TIMEZONE'] ?? 'Europe/Bucharest')))->format('Y-m-d H:i:s');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Core\View;
+use App\Repository\AuditLogRepository;
 use App\Repository\FineRepository;
 use Throwable;
 
@@ -17,11 +18,17 @@ class FineController
     private FineRepository $repo;
 
     /**
+     * MongoDB audit log persistence layer.
+     */
+    private AuditLogRepository $auditLogs;
+
+    /**
      * Creates the controller with a fine repository.
      */
-    public function __construct(FineRepository $repo)
+    public function __construct(FineRepository $repo, AuditLogRepository $auditLogs)
     {
         $this->repo = $repo;
+        $this->auditLogs = $auditLogs;
     }
 
     /**
@@ -47,7 +54,11 @@ class FineController
         }
 
         try {
-            $this->repo->insert($this->fineDataFromRequest());
+            $fineData = $this->fineDataFromRequest();
+            $this->repo->insert($fineData);
+            $this->auditLogs->log('admin_fine_created', $this->adminPayload([
+                'fine' => $fineData,
+            ]));
             $this->redirectToFines();
         } catch (Throwable $e) {
             View::render('admin/create/fine.twig', [
@@ -85,7 +96,12 @@ class FineController
         }
 
         try {
-            $this->repo->updateById($id, $this->fineDataFromRequest());
+            $fineData = $this->fineDataFromRequest();
+            $this->repo->updateById($id, $fineData);
+            $this->auditLogs->log('admin_fine_updated', $this->adminPayload([
+                'fine_id' => $id,
+                'fine' => $fineData,
+            ]));
             $this->redirectToFines();
         } catch (Throwable $e) {
             View::render('admin/edit/fine.twig', [
@@ -103,7 +119,12 @@ class FineController
      */
     public function delete(int $id): void
     {
+        $fine = $this->repo->findById($id);
         $this->repo->deleteById($id);
+        $this->auditLogs->log('admin_fine_deleted', $this->adminPayload([
+            'fine_id' => $id,
+            'fine' => $fine,
+        ]));
         $this->redirectToFines();
     }
 
@@ -132,5 +153,21 @@ class FineController
     {
         header('Location: ?page=admin/fines');
         exit;
+    }
+
+    /**
+     * Adds administrator data to an audit payload.
+     *
+     * @param array<string, mixed> $payload
+     * @return array<string, mixed>
+     */
+    private function adminPayload(array $payload): array
+    {
+        return [
+            'admin_id' => (int)($_SESSION['user']['id'] ?? 0),
+            'admin_email' => $_SESSION['user']['email'] ?? null,
+            'admin' => $_SESSION['user'] ?? null,
+            ...$payload,
+        ];
     }
 }

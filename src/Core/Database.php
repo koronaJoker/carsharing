@@ -39,7 +39,8 @@ class Database
                 PDO::ERRMODE_EXCEPTION
             );
 
-            self::$connection->exec("SET TIME ZONE 'Europe/Bucharest'");
+            $timezone = $_ENV['APP_TIMEZONE'] ?? 'Europe/Bucharest';
+            self::$connection->exec("SET TIME ZONE " . self::$connection->quote($timezone));
         }
 
         return self::$connection;

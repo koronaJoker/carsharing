@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Core\View;
+use App\Repository\AuditLogRepository;
 use App\Repository\PaymentRepository;
+use DateTimeImmutable;
+use DateTimeZone;
 use Throwable;
 
 /**
@@ -17,11 +20,17 @@ class PaymentController
     private PaymentRepository $repo;
 
     /**
+     * MongoDB audit log persistence layer.
+     */
+    private AuditLogRepository $auditLogs;
+
+    /**
      * Creates the controller with a payment repository.
      */
-    public function __construct(PaymentRepository $repo)
+    public function __construct(PaymentRepository $repo, AuditLogRepository $auditLogs)
     {
         $this->repo = $repo;
+        $this->auditLogs = $auditLogs;
     }
 
     /**
@@ -47,7 +56,12 @@ class PaymentController
         }
 
         try {
-            $this->repo->insert($this->paymentDataFromRequest());
+            $paymentData = $this->paymentDataFromRequest();
+            $paymentId = $this->repo->insert($paymentData);
+            $this->auditLogs->log('admin_payment_created', $this->adminPayload([
+                'payment_id' => $paymentId,
+                'payment' => $paymentData,
+            ]));
             $this->redirectToPayments();
         } catch (Throwable $e) {
             View::render('admin/create/payment.twig', [
@@ -85,7 +99,12 @@ class PaymentController
         }
 
         try {
-            $this->repo->updateById($id, $this->paymentDataFromRequest());
+            $paymentData = $this->paymentDataFromRequest();
+            $this->repo->updateById($id, $paymentData);
+            $this->auditLogs->log('admin_payment_updated', $this->adminPayload([
+                'payment_id' => $id,
+                'payment' => $paymentData,
+            ]));
             $this->redirectToPayments();
         } catch (Throwable $e) {
             View::render('admin/edit/payment.twig', [
@@ -103,7 +122,12 @@ class PaymentController
      */
     public function delete(int $id): void
     {
+        $payment = $this->repo->findById($id);
         $this->repo->deleteById($id);
+        $this->auditLogs->log('admin_payment_deleted', $this->adminPayload([
+            'payment_id' => $id,
+            'payment' => $payment,
+        ]));
         $this->redirectToPayments();
     }
 
@@ -128,7 +152,11 @@ class PaymentController
      */
     private function dateTimeOrNull(?string $value): ?string
     {
-        return $value ? str_replace('T', ' ', $value) : null;
+        if (!$value) {
+            return null;
+        }
+
+        return (new DateTimeImmutable($value, new DateTimeZone($_ENV['APP_TIMEZONE'] ?? 'Europe/Bucharest')))->format('Y-m-d H:i:s');
     }
 
     /**
@@ -138,5 +166,21 @@ class PaymentController
     {
         header('Location: ?page=admin/payments');
         exit;
+    }
+
+    /**
+     * Adds administrator data to an audit payload.
+     *
+     * @param array<string, mixed> $payload
+     * @return array<string, mixed>
+     */
+    private function adminPayload(array $payload): array
+    {
+        return [
+            'admin_id' => (int)($_SESSION['user']['id'] ?? 0),
+            'admin_email' => $_SESSION['user']['email'] ?? null,
+            'admin' => $_SESSION['user'] ?? null,
+            ...$payload,
+        ];
     }
 }

@@ -40,3 +40,14 @@
     </div>
 {% endif %}
 {% endblock %}
+
+{% block scripts %}
+    {% if rental and rental.status == 'active' %}
+        <script
+            src="{{ base }}/scripts/gps-tracker.js?v=gps-3"
+            data-gps-tracker
+            data-rental-id="{{ rental.id|e('html_attr') }}"
+            data-base-url="{{ base|e('html_attr') }}"
+        ></script>
+    {% endif %}
+{% endblock %}
