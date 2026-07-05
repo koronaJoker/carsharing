@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Tailwind подключается после внешних CSS-импортов. */
+@import 'tailwindcss';
+
+@import "./vars.css";
+@import "./keyframes.css";
+@import "./style.css";
+@import "./media.css";
+@import "./datapicker.css";
+@import "./rental-active.css";
+
+
+body {
+    font-family: 'Inter', sans-serif;
+}

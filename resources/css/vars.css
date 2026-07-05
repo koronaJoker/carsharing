@@ -1,0 +1,17 @@
+:root {
+    --white-color: #fff;
+    --bg-color: #292225;
+    --nav-color: #0e0d0e;
+    --primary-color : #EE1161;
+    --glass-bg : radial-gradient(
+            circle at top left,
+            rgba(124, 55, 90, .35),
+        transparent 60%
+    ),
+    linear-gradient(
+        135deg,
+        #352437,
+        #211c32
+    );
+    --btn-hover : radial-gradient(#EE1161 70%, #ff0037);
+}

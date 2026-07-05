@@ -1,0 +1,283 @@
+
+@media (max-width: 1024px) {
+    header {
+        padding: 15px 30px;
+    }
+ 
+    .card,.car-card {
+        width: 90vw;
+    }
+ 
+    .container {
+        width: 90vw;
+        grid-template-columns: repeat(2, 1fr);
+    }
+ 
+    .filter-block .form-group {
+        width: 45%;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: auto;
+        min-height: 60px;
+        border-bottom: none;
+        border-top: 2px solid #000;
+        padding: 10px 15px;
+        z-index: 1000;
+    }
+ 
+    header nav {
+        width: 100%;
+    }
+ 
+    header nav ul {
+        width: 100%;
+        justify-content: space-evenly;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+    }
+ 
+    header nav ul li {
+        flex: 1 1 0;
+        text-align: center;
+        min-width: 0;
+    }
+ 
+    header nav ul li a {
+        font-size: 13px;
+        white-space: nowrap;
+        display: inline-block;
+    }
+ 
+    header .btn-min,
+    header nav .btn-min {
+        padding: 6px 14px;
+        font-size: 12px;
+        border-radius: 30px;
+        white-space: nowrap;
+    }
+
+    .card {
+        flex-direction: column;
+        width: 92vw;
+        padding: 20px;
+    }
+ 
+    .card .flex-right {
+        margin-right: 0;
+        padding: 15px 0 0;
+        text-align: center;
+    }
+ 
+    .card h1,
+    .card h2,
+    .card h3 {
+        text-align: center;
+    }
+ 
+    .card h1 {
+        font-size: 30px;
+    }
+ 
+    .main-image {
+        width: 100%;
+    }
+ 
+    .btn {
+        float: none;
+        margin: 20px auto;
+        width: 100%;
+    }
+ 
+    .container {
+        width: 92vw;
+        display: flex;
+        flex-direction: column;
+    }
+ 
+    .card.filter-block {
+        padding: 20px;
+    }
+ 
+    .card.filter-block h1 {
+        font-size: 26px;
+    }
+ 
+    .flex {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+ 
+    .filter-block .form-group {
+        width: 100%;
+        margin: 0;
+    }
+ 
+    .filter-block .form-group label {
+        font-size: 13px;
+        margin: 0 0 6px;
+    }
+
+    .logo {
+        display: none;
+    }
+
+    .rental-actions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .admin-resource-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-workspace {
+        width: 94vw;
+        margin: 20px auto 90px;
+    }
+
+    .card.admin-record-card {
+        width: 100%;
+        padding: 18px;
+    }
+
+    .admin-page-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-page-head h1 {
+        font-size: 25px;
+        text-align: left;
+    }
+
+    .admin-form-grid,
+    .admin-detail-list {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-form-wide {
+        grid-column: auto;
+    }
+
+    .payment-summary p {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .payment-summary p span {
+        text-align: left;
+    }
+
+    .card.payment-card {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        width: 92vw;
+        margin: 20px auto 90px;
+        padding: 18px;
+    }
+
+    .payment-overview {
+        min-height: 260px;
+        padding: 28px 20px;
+    }
+
+    .payment-form h1 {
+        text-align: left;
+    }
+
+}
+
+
+@media(max-width:600px){
+
+    .card.profile {
+        width:90vw;
+        padding:20px;
+    }
+
+
+    .profile-header {
+        flex-direction:column;
+        text-align:center;
+    }
+
+
+    .profile-actions {
+        flex-direction:column;
+    }
+
+    .admin-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-resource-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-form-actions {
+        flex-direction: column;
+    }
+
+    .admin-form-actions .btn {
+        width: 100%;
+    }
+
+    .confirm-actions {
+        flex-direction: column;
+    }
+
+}
+
+.payment-btn {
+    margin-top: 10px;
+    width: 100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    padding:14px 20px;
+    border-radius:25px;
+    background: rgba(255,255,255,.05);
+    border:1px dashed var(--primary-color);
+    color: var(--primary-color);
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    transition:.3s ease;
+}
+
+
+
+.payment-btn span {
+    font-size:22px;
+    line-height:0;
+}
+
+
+
+.payment-btn:hover {
+    background: #EE116120;
+    box-shadow: 0 0 20px #EE116155;
+    transform:translateY(-3px);
+
+}
+
+@media (max-width:480px) {
+    .submit-block {
+        flex-direction: column;
+    }
+}

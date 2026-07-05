@@ -1,0 +1,437 @@
+.active-rental-page {
+    min-height: calc(100vh - 70px);
+    padding: 42px 20px 70px;
+    background:
+        radial-gradient(circle at 50% 24%, rgba(238, 17, 97, .11), transparent 34%),
+        linear-gradient(180deg, rgba(14, 13, 14, .14), rgba(14, 13, 14, .58));
+}
+
+.active-rental-shell {
+    width: min(520px, 100%);
+    margin: 0 auto;
+}
+
+.active-rental-kicker {
+    margin: 0 0 12px 8px;
+    color: rgba(255, 255, 255, .48);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: .02em;
+}
+
+.card.active-rental-card {
+    position: relative;
+    isolation: isolate;
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 38px 34px 28px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 34px;
+    background:
+        radial-gradient(circle at 50% 47%, rgba(235, 80, 213, .2), transparent 30%),
+        radial-gradient(circle at 12% 0%, rgba(238, 17, 97, .13), transparent 34%),
+        linear-gradient(145deg, #30202f 0%, #241a2d 48%, #2b2038 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .06),
+        inset 0 -30px 70px rgba(8, 2, 12, .22),
+        0 24px 55px rgba(0, 0, 0, .42);
+    animation: rental-card-in .65s cubic-bezier(.2, .75, .25, 1) both;
+}
+
+.card.active-rental-card::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(115deg, rgba(255, 255, 255, .05), transparent 28%, rgba(238, 17, 97, .04));
+    content: '';
+    pointer-events: none;
+}
+
+.active-rental-heading {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.active-rental-eyebrow {
+    display: block;
+    margin-bottom: 17px;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.active-rental-heading h1 {
+    margin: 0;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: .045em;
+    line-height: 1.2;
+    text-align: center;
+    text-transform: uppercase;
+    text-shadow: 0 0 18px rgba(238, 17, 97, .72);
+}
+
+.active-rental-heading p {
+    margin-top: 7px;
+    color: rgba(255, 255, 255, .5);
+    font-size: 12px;
+    letter-spacing: .04em;
+}
+
+.rental-toast {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 16px;
+    padding: 10px 13px;
+    border: 1px solid rgba(255, 255, 255, .09);
+    border-radius: 14px;
+    background: rgba(19, 10, 24, .62);
+    color: rgba(255, 255, 255, .86);
+    font-size: 12px;
+    animation: rental-toast-in .35s ease-out both;
+}
+
+.rental-toast--success i,
+.rental-toast--command i {
+    color: #ff4da0;
+}
+
+.rental-toast--error {
+    color: #ffd6df;
+    border-color: rgba(255, 64, 100, .25);
+}
+
+.active-rental-vehicle {
+    position: relative;
+    z-index: 1;
+    height: 230px;
+    margin: 4px 0 2px;
+}
+
+.vehicle-halo {
+    position: absolute;
+    top: 48%;
+    left: 64%;
+    width: 220px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 121, 231, .26), rgba(238, 17, 97, .07) 46%, transparent 72%);
+    filter: blur(9px);
+    animation: vehicle-halo-pulse 3.2s ease-in-out infinite;
+}
+
+.active-rental-car-image {
+    position: absolute;
+    z-index: 2;
+    right: -6px;
+    bottom: 27px;
+    width: 76%;
+    height: 155px;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 11px rgba(0, 0, 0, .5));
+    animation: vehicle-arrive .75s .18s cubic-bezier(.16, .8, .25, 1) both, vehicle-float 4.8s 1s ease-in-out infinite;
+}
+
+.vehicle-shadow {
+    position: absolute;
+    z-index: 1;
+    right: 5%;
+    bottom: 26px;
+    left: 65%;
+    width: 60%;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .58);
+    filter: blur(7px);
+    animation: vehicle-shadow-pulse 4.8s 1s ease-in-out infinite;
+}
+
+.rental-plate {
+    position: absolute;
+    z-index: 4;
+    bottom: 40px;
+    left: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 126px;
+    padding: 13px 14px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #b51a6e, #6625a0);
+    box-shadow: 0 10px 25px rgba(14, 4, 23, .3);
+    color: #fff;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: .13em;
+}
+
+.rental-plate i {
+    font-size: 14px;
+}
+
+.rental-control-grid {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.active-rental-card .rental-command-form {
+    width: 100%;
+    margin: 0;
+}
+
+.rental-control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 56px;
+    margin: 0;
+    padding: 12px 15px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 999px;
+    background: linear-gradient(135deg, #812052, #49266d);
+    box-shadow: 0 8px 24px rgba(18, 5, 26, .42);
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    transition: transform .25s ease, box-shadow .25s ease, filter .25s ease, border-color .25s ease;
+}
+
+.rental-control::before {
+    position: absolute;
+    top: -80%;
+    left: -55%;
+    width: 38%;
+    height: 260%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .2), transparent);
+    content: '';
+    pointer-events: none;
+    transform: rotate(18deg);
+    transition: left .55s ease;
+}
+
+.rental-control:hover {
+    border-color: rgba(255, 255, 255, .18);
+    box-shadow: 0 0 20px rgba(238, 17, 97, .45), 0 10px 28px rgba(10, 2, 17, .5);
+    filter: saturate(1.25) brightness(1.08);
+    transform: translateY(-3px);
+}
+
+.rental-control:hover::before {
+    left: 125%;
+}
+
+.rental-control:active,
+.rental-control.is-activating {
+    animation: control-feedback .34s ease both;
+}
+
+.rental-control i {
+    position: relative;
+    z-index: 1;
+    font-size: 14px;
+}
+
+.rental-control span {
+    position: relative;
+    z-index: 1;
+}
+
+.rental-control--warmup.is-triggered {
+    background: linear-gradient(120deg, #a3215e, #ec255f, #f3772c, #812052);
+    background-size: 220% 100%;
+    animation: warmup-ignite 1.25s ease-in-out 2;
+}
+
+.rental-control--flash.is-triggered {
+    animation: flash-burst .72s ease-in-out 2;
+}
+
+.rental-control--lock {
+    background: linear-gradient(135deg, #721e50, #3c245f);
+}
+
+.rental-control--lock.is-triggered i {
+    animation: lock-jolt .65s ease-in-out 2;
+}
+
+.rental-control--finish {
+    background: linear-gradient(135deg, #852052, #4e286e);
+    animation: finish-pulse 3s ease-in-out infinite;
+}
+
+.rental-control--secondary {
+    background: rgba(255, 255, 255, .07);
+    animation: none;
+}
+
+.active-rental-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 21px;
+    color: rgba(255, 255, 255, .43);
+    font-size: 11px;
+}
+
+.active-rental-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.active-rental-status {
+    color: #ff69aa;
+}
+
+.active-rental-status i {
+    font-size: 6px;
+    box-shadow: 0 0 10px #ee1161;
+}
+
+.confirm-modal {
+    z-index: 1200;
+    backdrop-filter: blur(10px);
+}
+
+.confirm-modal-card {
+    width: min(470px, 100%);
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, .11);
+    border-radius: 28px;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(238, 17, 97, .18), transparent 42%),
+        linear-gradient(145deg, #30202f, #211928);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, .62);
+    color: #fff;
+    text-align: center;
+    animation: modal-rise .35s cubic-bezier(.2, .75, .25, 1) both;
+}
+
+.confirm-modal-icon {
+    display: grid;
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #a62265, #592675);
+    box-shadow: 0 0 26px rgba(238, 17, 97, .35);
+    place-items: center;
+}
+
+.confirm-modal-card h2 {
+    margin-bottom: 9px;
+    text-align: center;
+}
+
+.confirm-modal-card p {
+    color: rgba(255, 255, 255, .62);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.confirm-modal-card .confirm-form {
+    width: 100%;
+}
+
+.confirm-check {
+    justify-content: center;
+    color: rgba(255, 255, 255, .75);
+    font-size: 12px;
+}
+
+.confirm-check input {
+    width: 17px;
+    height: 17px;
+    accent-color: #ee1161;
+}
+
+.confirm-actions {
+    margin-top: 18px;
+}
+
+@media (max-width: 600px) {
+    .active-rental-page {
+        padding: 28px 13px 45px;
+    }
+
+    .active-rental-kicker {
+        margin-left: 5px;
+        font-size: 16px;
+    }
+
+    .card.active-rental-card {
+        width: 100%;
+        padding: 30px 18px 23px;
+        border-radius: 28px;
+    }
+
+    .active-rental-vehicle {
+        height: 205px;
+    }
+
+    .active-rental-car-image {
+        right: -12px;
+        bottom: 28px;
+        width: 82%;
+        height: 140px;
+    }
+
+    .rental-plate {
+        bottom: 35px;
+        min-width: 112px;
+        padding: 11px 12px;
+        font-size: 11px;
+    }
+
+    .rental-control-grid {
+        gap: 9px;
+    }
+
+    .rental-control {
+        min-height: 52px;
+        padding: 10px 8px;
+        font-size: 11px;
+    }
+
+    .active-rental-meta {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .confirm-actions {
+        flex-direction: column;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .active-rental-card,
+    .active-rental-car-image,
+    .vehicle-halo,
+    .vehicle-shadow,
+    .rental-control,
+    .confirm-modal-card,
+    .rental-toast {
+        animation: none !important;
+        transition: none !important;
+    }
+}

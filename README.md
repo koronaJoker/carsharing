@@ -1,197 +1,59 @@
-# Лабораторная работа №8 Работа с базой данных.
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-## Веб сайт для Каршеринговой компании.
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
- Задача: разработать веб-сайт с реализацией CRUD функционала, регистрацией и админ-панелью.
+## About Laravel
 
-## 1.Архитектура приложения.
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-В данной лабораторной работе я выбрал MVC паттерн.
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-MVC - это архитектурный шаблон, разделяющий приложение на три компонента: Модель (данные/логика), Представление (интерфейс/HTML) и Контроллер (управление/связь). Это структурирует код, облегчает поддержку и позволяет независимо менять логику и внешний вид.
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## 2. База данных
-Я использовал язык Posgres + PgAdmin за его простоту, современность, скорость и возможности. Весь бэкенд написан на языке `php`. к нему я подключил `composer`, шаблонизатор `twig` и переменные окружения `vlucas/dotenv`
+## Learning Laravel
 
-Запуск приложения происходит из `Docker` кластера контейнеров  `backend+database+pgadmin`.
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
 
-## 3. Авторизация
-1. При заходе на сайт, проверяем есть ли активная сессия пользователя. Если нет, даем выбор между регистрацией и авторизацией.
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-1. При регистрации Пользователь заполняет все необходимые поля. При авторизации необходимо по логину и паролю обнаружить в списках клиентов. если есть - пускаем.
-2. Через классы валидаторы система проверяет коррекность данных и оповещает в виде модального окна с ошибками.
-3. Если данные в порядке, с помощью контроллера и набора классов репозиториев отправляются запросы в базу данных с защитой от SQL иньекций и маршрутизируют на нужную страницу. Пароли хешируются через функцию password_hash();
-4. Если клиент в таблице клиентов в поле role = админ, он имеет доступ к редактированию почти всех полей других пользователей.
+## Laravel Sponsors
 
-![alt text](images/image-10.png)
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-![alt text](images/image-11.png)
+### Premium Partners
 
+- **[Vehikl](https://vehikl.com)**
+- **[Tighten Co.](https://tighten.co)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Redberry](https://redberry.international/laravel-development)**
+- **[Active Logic](https://activelogic.com)**
 
-## 4. Обзор функционала
+## Contributing
 
-### Выбор автомобиля вместе с фильтрами и сортировкой
- 
-![alt text](images/image-1.png)
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-### Оформление аренды
-![alt text](images/image-2.png)
+## Code of Conduct
 
-### Оплата, ввод данных карты вместе с итоговой суммой.
-![alt text](images/image-3.png)
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-### Профиль пользователя
-![alt text](images/image-4.png)
+## Security Vulnerabilities
 
-### Добавление/Удаление адресов с возможностью открытия в GOOGLE MAPS.
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-### Светлая и темная тема сайта.
-![alt text](images/image-5.png)
+## License
 
-### Админ панель для персонала
-![alt text](images/image-6.png)
-
-![alt text](images/image-7.png)
-
-![alt text](images/image-8.png)
-
-![alt text](images/image-9.png)
-
-![alt text](images/image-12.png)
-
-## Что такое PDO?
-PDO (PHP Data Objects) — это интерфейс для работы с базами данных в PHP через единый API.
-
----
-
-## Чем PDO отличается от устаревших расширений mysqli_*?
-- PDO поддерживает разные СУБД: MySQL, PostgreSQL, SQLite и др.
-- `mysqli` работает только с MySQL.
-- PDO удобнее для prepared statements.
-- Старые `mysql_*` расширения устарели и удалены.
-
----
-
-## Что такое подготовленные выражения?
-Подготовленные выражения (prepared statements) — это SQL-запросы с параметрами, значения которых передаются отдельно.
-
-Пример:
-```php
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
-$stmt->execute(['id' => $id]);
-```
-
----
-
-## Зачем нужны подготовленные выражения?
-- защита от SQL-инъекций;
-- безопасная передача данных;
-- более чистый код;
-- удобно переиспользовать запросы.
-
----
-
-## Как prepared statements защищают от SQL-инъекций?
-SQL-запрос и данные отправляются отдельно.  
-Пользовательский ввод не может изменить структуру SQL-запроса.
-
----
-
-## Что такое транзакция?
-Транзакция — это группа SQL-операций, выполняемых как одно целое.
-
-Если одна операция завершится ошибкой — можно отменить все изменения.
-
----
-
-## В каких ситуациях использовать транзакции?
-Когда несколько запросов должны выполниться вместе:
-- перевод денег;
-- оформление аренды;
-- создание заказа и оплаты;
-- изменение нескольких связанных таблиц.
-
----
-
-## Пример транзакции
-```php
-$pdo->beginTransaction();
-
-try {
-    // SQL-запросы
-
-    $pdo->commit();
-} catch (Exception $e) {
-    $pdo->rollBack();
-}
-```
-
----
-
-## Что делают beginTransaction(), commit(), rollback()?
-
-### beginTransaction()
-Начинает транзакцию.
-
-### commit()
-Подтверждает изменения в базе данных.
-
-### rollBack()
-Отменяет все изменения после начала транзакции.
-
----
-
-## Чем отличается fetch() от fetchAll()?
-
-### fetch()
-Возвращает одну строку результата.
-
-```php
-$row = $stmt->fetch();
-```
-
-### fetchAll()
-Возвращает все строки массивом.
-
-```php
-$rows = $stmt->fetchAll();
-```
-
----
-
-## NoSQL база данных MongoDB
-
-Кроме реляционной базы PostgreSQL в проект добавлена NoSQL база MongoDB. PostgreSQL остается основной базой для структурированных данных: клиентов, машин, аренд, оплат и штрафов. MongoDB используется как документное хранилище для журнала событий приложения.
-
-В MongoDB создается коллекция:
-
-```text
-carsharing_nosql.audit_logs
-```
-
-В нее записываются события:
-
-- `login` - вход пользователя;
-- `registration` - регистрация клиента;
-- `rental_created` - создание аренды;
-- `payment_created` - успешная оплата;
-- `rental_finished` - завершение аренды.
-- `admin_car_created`, `admin_car_updated`, `admin_car_deleted` - действия администратора с машинами;
-- `admin_client_created`, `admin_client_updated`, `admin_client_deleted` - действия администратора с клиентами;
-- `admin_payment_created`, `admin_payment_updated`, `admin_payment_deleted` - действия администратора с оплатами;
-- `admin_rental_created`, `admin_rental_updated`, `admin_rental_deleted` - действия администратора с арендами;
-- `admin_fine_created`, `admin_fine_updated`, `admin_fine_deleted` - действия администратора со штрафами.
-
-Такой подход показывает работу сразу с двумя типами баз данных:
-
-- PostgreSQL хранит нормализованные связанные таблицы;
-- MongoDB хранит гибкие JSON-подобные документы с историей действий.
-
-Настройки MongoDB находятся в `src/data.env`:
-
-```env
-MONGODB_URI=mongodb://localhost:27017
-MONGODB_DATABASE=carsharing_nosql
-```
-
-Для полноценной работы MongoDB нужно установить сам сервер MongoDB и PHP-расширение `mongodb` для XAMPP. Если расширение не установлено, сайт продолжит работать на PostgreSQL, а NoSQL-логирование будет просто пропущено.
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
